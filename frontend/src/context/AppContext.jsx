@@ -51,6 +51,11 @@ export const AppProvider = ({ children }) => {
   // Active tab state
   const [activeTab, setActiveTab] = useState('top'); // 'top' | 'favorites' | 'ai-results'
 
+  // Detailed view state
+  const [detailedProperty, setDetailedProperty] = useState(null);
+  const [detailedViewTab, setDetailedViewTab] = useState('details'); // 'details' | 'commute' | 'nearby'
+  const [selectedRoutes, setSelectedRoutes] = useState([]); // Routes to render on map
+
   // Persist workplace to localStorage
   useEffect(() => {
     if (workplace) {
@@ -118,7 +123,15 @@ export const AppProvider = ({ children }) => {
 
     // Active tab
     activeTab,
-    setActiveTab
+    setActiveTab,
+
+    // Detailed view
+    detailedProperty,
+    setDetailedProperty,
+    detailedViewTab,
+    setDetailedViewTab,
+    selectedRoutes,
+    setSelectedRoutes
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

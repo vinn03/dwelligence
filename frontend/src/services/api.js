@@ -55,6 +55,15 @@ export const commuteAPI = {
         ...bounds
       }
     });
+  },
+
+  // Get route alternatives from origin to destination
+  getRoutes: (origin, destination, mode = 'transit') => {
+    return api.post('/commute/routes', {
+      origin,
+      destination,
+      mode
+    });
   }
 };
 

@@ -1,6 +1,7 @@
 import { useAppContext } from '../../context/AppContext';
 import TabsContainer from './TabsContainer';
 import Listing from '../Listing/Listing';
+import DetailedListingView from './DetailedListingView';
 
 const RightPanel = () => {
   const {
@@ -10,7 +11,9 @@ const RightPanel = () => {
     favorites,
     loading,
     calculatingCommutes,
-    workplace
+    workplace,
+    detailedProperty,
+    setDetailedProperty
   } = useAppContext();
 
   // Get favorite properties
@@ -75,13 +78,27 @@ const RightPanel = () => {
     return (
       <div className="space-y-4">
         {propertiesToShow.map((property) => (
-          <div key={property.id} className="cursor-pointer">
+          <div key={property.id} className="cursor-pointer" onClick={() => setDetailedProperty(property)}>
             <Listing property={property} compact={false} />
           </div>
         ))}
       </div>
     );
   };
+
+  // Show detailed view if property is selected
+  if (detailedProperty) {
+    return (
+      <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
+        <DetailedListingView
+          property={detailedProperty}
+          onBack={() => {
+            setDetailedProperty(null);
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="w-96 bg-white border-l border-gray-200 flex flex-col">

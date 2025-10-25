@@ -12,6 +12,11 @@ const PropertyMarker = ({ property }) => {
     setShowTooltip(true);
   };
 
+  const handleClose = () => {
+    setShowTooltip(false);
+    setSelectedProperty(null);
+  };
+
   const isSelected = selectedProperty?.id === property.id;
 
   return (
@@ -33,7 +38,7 @@ const PropertyMarker = ({ property }) => {
 
       {/* Show tooltip when marker is clicked */}
       {isSelected && showTooltip && (
-        <Tooltip property={property} onClose={() => setShowTooltip(false)} />
+        <Tooltip property={property} onClose={handleClose} />
       )}
     </>
   );

@@ -1,6 +1,7 @@
 import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
 import { useAppContext } from '../../context/AppContext';
 import PropertyMarker from './PropertyMarker';
+import RoutePolylines from './RoutePolylines';
 import { useEffect, useCallback, useRef } from 'react';
 import { propertiesAPI } from '../../services/api';
 import { useCommuteCalculation } from '../../hooks/useCommuteCalculation';
@@ -90,6 +91,9 @@ const MapContent = () => {
         <PropertyMarker key={property.id} property={property} />
       ))}
 
+      {/* Render route polylines when viewing commute tab */}
+      <RoutePolylines />
+
       {/* TODO: Render workplace marker if set */}
       {workplace && (
         <div>
@@ -104,7 +108,10 @@ const MapContainer = () => {
   const defaultCenter = { lat: 37.7749, lng: -122.4194 }; // San Francisco
 
   return (
-    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+    <APIProvider
+      apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+      libraries={['places', 'geometry']} // Add geometry library for polyline decoding
+    >
       <Map
         defaultCenter={defaultCenter}
         defaultZoom={13}
