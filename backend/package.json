@@ -1,0 +1,29 @@
+{
+  "name": "dwelligence-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Dwelligence - Map-based real estate search with commute intelligence",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "seed": "node scripts/seed-database.js",
+    "seed:amenities": "node scripts/seed-amenities.js"
+  },
+  "keywords": ["real-estate", "maps", "commute", "ai"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@googlemaps/google-maps-services-js": "^3.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "h3-js": "^4.1.0",
+    "node-cache": "^5.1.2",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
