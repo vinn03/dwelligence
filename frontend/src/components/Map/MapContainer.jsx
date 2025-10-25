@@ -2,10 +2,28 @@ import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
 import { useAppContext } from '../../context/AppContext';
 import PropertyMarker from './PropertyMarker';
 import { useEffect } from 'react';
+import { propertiesAPI } from '../../services/api';
 
 const MapContent = () => {
-  const { visibleProperties, workplace, mapBounds } = useAppContext();
+  const { visibleProperties, setVisibleProperties, workplace, mapBounds, setLoading } = useAppContext();
   const map = useMap();
+
+  // Fetch properties on initial load
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setLoading(true);
+        const response = await propertiesAPI.getAll();
+        setVisibleProperties(response.data);
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []); // Empty dependency array = run once on mount
 
   // Handle map bounds changes from search
   useEffect(() => {
@@ -20,7 +38,7 @@ const MapContent = () => {
 
   return (
     <>
-      {/* TODO: Render property markers */}
+      {/* Render property markers */}
       {visibleProperties.map((property) => (
         <PropertyMarker key={property.id} property={property} />
       ))}
