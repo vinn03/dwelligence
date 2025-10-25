@@ -212,7 +212,8 @@ export const googleMaps = {
               instruction: step.html_instructions,
               distance: step.distance.text,
               duration: step.duration.text,
-              durationValue: step.duration.value
+              durationValue: step.duration.value,
+              polyline: step.polyline?.points || null // Encoded polyline for this specific step
             };
 
             // Add transit-specific details if this is a transit step
