@@ -1,29 +1,76 @@
 import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
 import { useAppContext } from '../../context/AppContext';
 import PropertyMarker from './PropertyMarker';
-import { useEffect } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { propertiesAPI } from '../../services/api';
+import { useCommuteCalculation } from '../../hooks/useCommuteCalculation';
 
 const MapContent = () => {
-  const { visibleProperties, setVisibleProperties, workplace, mapBounds, setLoading } = useAppContext();
+  const { visibleProperties, setVisibleProperties, workplace, mapBounds, setMapBounds, setLoading } = useAppContext();
   const map = useMap();
+  const debounceTimer = useRef(null);
 
-  // Fetch properties on initial load
+  // Automatically calculate commutes when properties, workplace, or transport mode changes
+  useCommuteCalculation();
+
+  // Fetch properties within viewport bounds
+  const fetchPropertiesInBounds = useCallback(async (bounds) => {
+    try {
+      setLoading(true);
+      const response = await propertiesAPI.getInBounds(bounds);
+      setVisibleProperties(response.data);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [setVisibleProperties, setLoading]);
+
+  // Handle map bounds changes (with debouncing)
   useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        setLoading(true);
-        const response = await propertiesAPI.getAll();
-        setVisibleProperties(response.data);
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-      } finally {
-        setLoading(false);
+    if (!map) return;
+
+    const handleBoundsChanged = () => {
+      // Clear existing timer
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
       }
+
+      // Debounce: wait 500ms after user stops panning
+      debounceTimer.current = setTimeout(() => {
+        const bounds = map.getBounds();
+        if (bounds) {
+          const ne = bounds.getNorthEast();
+          const sw = bounds.getSouthWest();
+
+          const boundsObj = {
+            north: ne.lat(),
+            south: sw.lat(),
+            east: ne.lng(),
+            west: sw.lng()
+          };
+
+          fetchPropertiesInBounds(boundsObj);
+        }
+      }, 500);
     };
 
-    fetchProperties();
-  }, []); // Empty dependency array = run once on mount
+    // Listen for bounds changes
+    const listener = map.addListener('bounds_changed', handleBoundsChanged);
+
+    // Initial fetch when map is ready
+    handleBoundsChanged();
+
+    // Cleanup
+    return () => {
+      if (listener) {
+        window.google.maps.event.removeListener(listener);
+      }
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [map, fetchPropertiesInBounds]);
 
   // Handle map bounds changes from search
   useEffect(() => {

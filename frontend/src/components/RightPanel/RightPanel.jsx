@@ -9,6 +9,7 @@ const RightPanel = () => {
     visibleProperties,
     favorites,
     loading,
+    calculatingCommutes,
     workplace
   } = useAppContext();
 
@@ -16,6 +17,27 @@ const RightPanel = () => {
   const favoriteProperties = visibleProperties.filter((p) =>
     favorites.includes(p.id)
   );
+
+  // Sort properties by commute-aware ranking (for Top tab)
+  const getSortedProperties = () => {
+    if (!workplace) {
+      // No workplace set, sort by price only
+      return [...visibleProperties].sort((a, b) => a.price - b.price);
+    }
+
+    // Commute-aware ranking: (duration_seconds * 0.5) + (price * 0.5)
+    // Lower score = better
+    return [...visibleProperties].sort((a, b) => {
+      const getDurationSeconds = (property) => {
+        return property.commute?.duration || 999999; // Properties without commute go to bottom
+      };
+
+      const scoreA = (getDurationSeconds(a) * 0.5) + (a.price * 0.5);
+      const scoreB = (getDurationSeconds(b) * 0.5) + (b.price * 0.5);
+
+      return scoreA - scoreB;
+    });
+  };
 
   // Render properties based on active tab
   const renderProperties = () => {
@@ -34,7 +56,8 @@ const RightPanel = () => {
     let emptyMessage = '';
 
     if (activeTab === 'top') {
-      propertiesToShow = visibleProperties.slice(0, 20); // Top 20
+      const sortedProperties = getSortedProperties();
+      propertiesToShow = sortedProperties.slice(0, 20); // Top 20
       emptyMessage = 'No properties found in this area.';
     } else if (activeTab === 'favorites') {
       propertiesToShow = favoriteProperties;
@@ -73,6 +96,16 @@ const RightPanel = () => {
             <p className="text-sm text-blue-800">
               Set your workplace to see properties ranked by commute time
             </p>
+          </div>
+        )}
+
+        {/* Show calculating commutes indicator */}
+        {calculatingCommutes && workplace && activeTab === 'top' && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-600"></div>
+              <p className="text-sm text-amber-800">Calculating commutes...</p>
+            </div>
           </div>
         )}
 
