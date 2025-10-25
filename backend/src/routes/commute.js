@@ -63,4 +63,29 @@ router.get('/batch', async (req, res, next) => {
   }
 });
 
+// POST /api/commute/routes - Get route alternatives from property to workplace
+router.post('/routes', async (req, res, next) => {
+  try {
+    const { origin, destination, mode = 'transit' } = req.body;
+
+    if (!origin || !origin.lat || !origin.lng) {
+      return res.status(400).json({
+        error: 'Origin coordinates required (lat, lng)'
+      });
+    }
+
+    if (!destination || !destination.lat || !destination.lng) {
+      return res.status(400).json({
+        error: 'Destination coordinates required (lat, lng)'
+      });
+    }
+
+    const routes = await googleMaps.getRouteAlternatives(origin, destination, mode);
+
+    res.json(routes);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

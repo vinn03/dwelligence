@@ -163,5 +163,63 @@ export const googleMaps = {
       console.error('Error geocoding address:', error);
       throw error;
     }
+  },
+
+  /**
+   * Get route alternatives from origin to destination
+   * Returns up to 3 alternative routes with details
+   */
+  async getRouteAlternatives(origin, destination, mode = 'transit') {
+    try {
+      // Check cache first
+      const cacheKey = `routes:${origin.lat},${origin.lng}:${destination.lat},${destination.lng}:${mode}`;
+      const cached = cache.get(cacheKey);
+
+      if (cached) {
+        return cached;
+      }
+
+      const response = await client.directions({
+        params: {
+          origin: `${origin.lat},${origin.lng}`,
+          destination: `${destination.lat},${destination.lng}`,
+          mode: mode, // 'driving' | 'walking' | 'bicycling' | 'transit'
+          alternatives: true, // Request alternative routes
+          key: process.env.GOOGLE_MAPS_API_KEY
+        }
+      });
+
+      if (response.data.routes.length === 0) {
+        throw new Error('No routes found');
+      }
+
+      // Process routes (up to 3)
+      const routes = response.data.routes.slice(0, 3).map((route, index) => {
+        const leg = route.legs[0]; // First leg (single origin-destination)
+
+        return {
+          routeIndex: index,
+          duration: leg.duration.value, // seconds
+          durationText: leg.duration.text,
+          distance: leg.distance.value, // meters
+          distanceText: leg.distance.text,
+          summary: route.summary, // e.g., "I-280 S"
+          steps: leg.steps.map(step => ({
+            instruction: step.html_instructions,
+            distance: step.distance.text,
+            duration: step.duration.text
+          })),
+          polyline: route.overview_polyline.points // Encoded polyline for map rendering
+        };
+      });
+
+      // Cache the results
+      cache.set(cacheKey, routes);
+
+      return routes;
+    } catch (error) {
+      console.error('Error getting route alternatives:', error);
+      throw error;
+    }
   }
 };
