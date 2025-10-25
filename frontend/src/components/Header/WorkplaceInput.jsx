@@ -1,16 +1,55 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '../../context/AppContext';
+import { useMapsLibrary } from '@vis.gl/react-google-maps';
 
 const WorkplaceInput = () => {
   const { workplace, setWorkplace } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
   const [address, setAddress] = useState('');
+  const inputRef = useRef(null);
+  const autocompleteRef = useRef(null);
+  const placesLibrary = useMapsLibrary('places');
+
+  // Initialize autocomplete when modal opens and places library is loaded
+  useEffect(() => {
+    if (!placesLibrary || !inputRef.current || !isOpen) return;
+
+    const autocomplete = new placesLibrary.Autocomplete(inputRef.current, {
+      fields: ['formatted_address', 'geometry', 'name', 'place_id'],
+      types: ['geocode'],
+      componentRestrictions: { country: 'us' },
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+
+      if (!place.geometry || !place.geometry.location) {
+        console.error('No geometry for selected place');
+        return;
+      }
+
+      const workplaceData = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+        formattedAddress: place.formatted_address || place.name,
+        placeId: place.place_id,
+      };
+
+      setWorkplace(workplaceData);
+      setAddress(workplaceData.formattedAddress);
+      setIsOpen(false);
+    });
+
+    autocompleteRef.current = autocomplete;
+  }, [placesLibrary, isOpen, setWorkplace]);
 
   const handleSetWorkplace = (e) => {
     e.preventDefault();
-    // TODO: Geocode address and set workplace
-    console.log('Setting workplace:', address);
-    // For now, just close the modal
+    // If user manually entered address without selecting from autocomplete
+    if (address && !autocompleteRef.current?.getPlace()?.geometry) {
+      console.log('Please select an address from the dropdown');
+      return;
+    }
     setIsOpen(false);
   };
 
@@ -45,6 +84,7 @@ const WorkplaceInput = () => {
             <h2 className="text-xl font-bold mb-4">Set Your Workplace</h2>
             <form onSubmit={handleSetWorkplace}>
               <input
+                ref={inputRef}
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
