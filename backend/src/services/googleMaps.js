@@ -204,11 +204,49 @@ export const googleMaps = {
           distance: leg.distance.value, // meters
           distanceText: leg.distance.text,
           summary: route.summary, // e.g., "I-280 S"
-          steps: leg.steps.map(step => ({
-            instruction: step.html_instructions,
-            distance: step.distance.text,
-            duration: step.duration.text
-          })),
+          departureTime: leg.departure_time?.text || null,
+          arrivalTime: leg.arrival_time?.text || null,
+          steps: leg.steps.map(step => {
+            const stepData = {
+              travelMode: step.travel_mode, // WALKING, TRANSIT, DRIVING, etc.
+              instruction: step.html_instructions,
+              distance: step.distance.text,
+              duration: step.duration.text,
+              durationValue: step.duration.value
+            };
+
+            // Add transit-specific details if this is a transit step
+            if (step.travel_mode === 'TRANSIT' && step.transit_details) {
+              const transit = step.transit_details;
+              stepData.transit = {
+                line: {
+                  name: transit.line.name,
+                  shortName: transit.line.short_name,
+                  color: transit.line.color || null,
+                  textColor: transit.line.text_color || null,
+                  vehicle: {
+                    type: transit.line.vehicle.type, // BUS, SUBWAY, TRAIN, etc.
+                    name: transit.line.vehicle.name,
+                    icon: transit.line.vehicle.icon || null
+                  }
+                },
+                departureStop: {
+                  name: transit.departure_stop.name,
+                  location: transit.departure_stop.location
+                },
+                arrivalStop: {
+                  name: transit.arrival_stop.name,
+                  location: transit.arrival_stop.location
+                },
+                numStops: transit.num_stops,
+                headsign: transit.headsign,
+                departureTime: transit.departure_time?.text || null,
+                arrivalTime: transit.arrival_time?.text || null
+              };
+            }
+
+            return stepData;
+          }),
           polyline: route.overview_polyline.points // Encoded polyline for map rendering
         };
       });
