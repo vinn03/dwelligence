@@ -7,10 +7,9 @@ const Tooltip = ({ property, onClose }) => {
       position={{ lat: property.lat, lng: property.lng }}
       onClose={onClose}
       maxWidth={350}
+      headerDisabled={true}
     >
-      <div className="p-2">
-        <Listing property={property} compact={true} />
-      </div>
+      <Listing property={property} compact={true} showClose={true} onClose={onClose} />
     </InfoWindow>
   );
 };

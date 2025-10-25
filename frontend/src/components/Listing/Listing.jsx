@@ -1,6 +1,6 @@
 import { useAppContext } from '../../context/AppContext';
 
-const Listing = ({ property, compact = false }) => {
+const Listing = ({ property, compact = false, showClose = false, onClose = null }) => {
   const { favorites, toggleFavorite, transportMode } = useAppContext();
 
   const isFavorite = favorites.includes(property.id);
@@ -21,6 +21,31 @@ const Listing = ({ property, compact = false }) => {
           alt={property.address}
           className={`w-full object-cover ${compact ? 'h-32' : 'h-48'}`}
         />
+
+        {/* Close Button (for tooltip) */}
+        {showClose && onClose && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
+            className="absolute top-2 left-2 p-1.5 bg-white rounded-full shadow-md hover:bg-gray-100"
+          >
+            <svg
+              className="w-4 h-4 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        )}
 
         {/* Favorite Button */}
         <button
