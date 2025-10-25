@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS properties (
   bedrooms INTEGER,
   bathrooms DECIMAL(3, 1),
   sq_ft INTEGER,
-  property_type VARCHAR(50), -- 'apartment', 'house', 'condo'
+  property_type VARCHAR(50), -- 'apartment', 'house'
   sale_type VARCHAR(20), -- 'rent', 'sale'
 
   -- Location

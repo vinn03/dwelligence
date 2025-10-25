@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useAppContext } from '../../context/AppContext';
+import { useState } from "react";
+import { useAppContext } from "../../context/AppContext";
 
 const Filters = () => {
   const { filters, updateFilters } = useAppContext();
@@ -17,7 +17,7 @@ const Filters = () => {
       bedrooms: null,
       bathrooms: null,
       propertyType: null,
-      listingType: null
+      listingType: null,
     });
   };
 
@@ -59,7 +59,7 @@ const Filters = () => {
                   <input
                     type="number"
                     placeholder="Min"
-                    value={filters.minPrice || ''}
+                    value={filters.minPrice || ""}
                     onChange={(e) =>
                       updateFilters({ minPrice: e.target.value || null })
                     }
@@ -68,7 +68,7 @@ const Filters = () => {
                   <input
                     type="number"
                     placeholder="Max"
-                    value={filters.maxPrice || ''}
+                    value={filters.maxPrice || ""}
                     onChange={(e) =>
                       updateFilters({ maxPrice: e.target.value || null })
                     }
@@ -83,7 +83,7 @@ const Filters = () => {
                   Bedrooms
                 </label>
                 <select
-                  value={filters.bedrooms || ''}
+                  value={filters.bedrooms || ""}
                   onChange={(e) =>
                     updateFilters({ bedrooms: e.target.value || null })
                   }
@@ -103,7 +103,7 @@ const Filters = () => {
                   Bathrooms
                 </label>
                 <select
-                  value={filters.bathrooms || ''}
+                  value={filters.bathrooms || ""}
                   onChange={(e) =>
                     updateFilters({ bathrooms: e.target.value || null })
                   }
@@ -122,7 +122,7 @@ const Filters = () => {
                   Property Type
                 </label>
                 <select
-                  value={filters.propertyType || ''}
+                  value={filters.propertyType || ""}
                   onChange={(e) =>
                     updateFilters({ propertyType: e.target.value || null })
                   }
@@ -131,7 +131,6 @@ const Filters = () => {
                   <option value="">Any</option>
                   <option value="apartment">Apartment</option>
                   <option value="house">House</option>
-                  <option value="condo">Condo</option>
                 </select>
               </div>
             </div>

@@ -1,12 +1,15 @@
-import pg from 'pg';
-import dotenv from 'dotenv';
+import pg from "pg";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const { Pool } = pg;
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 // Sample properties in San Francisco, CA
@@ -20,10 +23,11 @@ const sampleProperties = [
     bedrooms: 2,
     bathrooms: 1,
     sq_ft: 900,
-    property_type: 'apartment',
-    sale_type: 'rent',
-    description: 'Modern downtown apartment with city views',
-    image_url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800'
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Modern downtown apartment with city views",
+    image_url:
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800",
   },
   {
     name: null,
@@ -34,10 +38,11 @@ const sampleProperties = [
     bedrooms: 3,
     bathrooms: 2,
     sq_ft: 1200,
-    property_type: 'apartment',
-    sale_type: 'rent',
-    description: 'Spacious 3-bedroom in SOMA',
-    image_url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800'
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Spacious 3-bedroom in SOMA",
+    image_url:
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800",
   },
   {
     name: null,
@@ -48,10 +53,11 @@ const sampleProperties = [
     bedrooms: 1,
     bathrooms: 1,
     sq_ft: 650,
-    property_type: 'apartment',
-    sale_type: 'rent',
-    description: 'Cozy studio in vibrant Mission District',
-    image_url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800'
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Cozy studio in vibrant Mission District",
+    image_url:
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800",
   },
   {
     name: null,
@@ -62,10 +68,11 @@ const sampleProperties = [
     bedrooms: 2,
     bathrooms: 1.5,
     sq_ft: 950,
-    property_type: 'condo',
-    sale_type: 'rent',
-    description: 'Beautiful condo in Hayes Valley',
-    image_url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800'
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Beautiful apartment in Hayes Valley",
+    image_url:
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800",
   },
   {
     name: null,
@@ -76,10 +83,11 @@ const sampleProperties = [
     bedrooms: 2,
     bathrooms: 2,
     sq_ft: 1000,
-    property_type: 'apartment',
-    sale_type: 'rent',
-    description: 'Trendy apartment in iconic Haight-Ashbury',
-    image_url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800'
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Trendy apartment in iconic Haight-Ashbury",
+    image_url:
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800",
   },
   {
     name: null,
@@ -90,10 +98,11 @@ const sampleProperties = [
     bedrooms: 1,
     bathrooms: 1,
     sq_ft: 750,
-    property_type: 'apartment',
-    sale_type: 'rent',
-    description: 'Modern 1-bedroom loft in SOMA',
-    image_url: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800'
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Modern 1-bedroom loft in SOMA",
+    image_url:
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800",
   },
   {
     name: null,
@@ -104,13 +113,14 @@ const sampleProperties = [
     bedrooms: 1,
     bathrooms: 1,
     sq_ft: 600,
-    property_type: 'apartment',
-    sale_type: 'rent',
-    description: 'Character apartment in Chinatown',
-    image_url: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800'
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Character apartment in Chinatown",
+    image_url:
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800",
   },
   {
-    name: 'The Embarcadero Residences',
+    name: "The Embarcadero Residences",
     address: "753 The Embarcadero, San Francisco, CA",
     lat: 37.7956,
     lng: -122.3933,
@@ -118,10 +128,11 @@ const sampleProperties = [
     bedrooms: 3,
     bathrooms: 2.5,
     sq_ft: 1600,
-    property_type: 'condo',
-    sale_type: 'rent',
-    description: 'Luxury waterfront condo with Bay views',
-    image_url: 'https://images.unsplash.com/photo-1515263487990-61b07816b324?w=800'
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Luxury waterfront apartment with Bay views",
+    image_url:
+      "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=800",
   },
   {
     name: null,
@@ -132,10 +143,11 @@ const sampleProperties = [
     bedrooms: 2,
     bathrooms: 1,
     sq_ft: 850,
-    property_type: 'apartment',
-    sale_type: 'rent',
-    description: 'Modern apartment near Union Square',
-    image_url: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800'
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Modern apartment near Union Square",
+    image_url:
+      "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=800",
   },
   {
     name: null,
@@ -146,22 +158,23 @@ const sampleProperties = [
     bedrooms: 2,
     bathrooms: 2,
     sq_ft: 1050,
-    property_type: 'apartment',
-    sale_type: 'rent',
-    description: 'Stylish apartment in trendy NoPa',
-    image_url: 'https://images.unsplash.com/photo-1502672023488-70e25813eb80?w=800'
-  }
+    property_type: "apartment",
+    sale_type: "rent",
+    description: "Stylish apartment in trendy NoPa",
+    image_url:
+      "https://images.unsplash.com/photo-1502672023488-70e25813eb80?w=800",
+  },
 ];
 
 async function seedDatabase() {
   const client = await pool.connect();
 
   try {
-    console.log('🌱 Starting database seed...');
+    console.log("🌱 Starting database seed...");
 
     // Clear existing data
-    await client.query('TRUNCATE TABLE properties RESTART IDENTITY CASCADE');
-    console.log('✅ Cleared existing properties');
+    await client.query("TRUNCATE TABLE properties RESTART IDENTITY CASCADE");
+    console.log("✅ Cleared existing properties");
 
     // Insert sample properties
     for (const property of sampleProperties) {
@@ -197,15 +210,14 @@ async function seedDatabase() {
         property.property_type,
         property.sale_type,
         property.description,
-        property.image_url
+        property.image_url,
       ]);
     }
 
     console.log(`✅ Seeded ${sampleProperties.length} properties`);
-    console.log('🎉 Database seed completed successfully!');
-
+    console.log("🎉 Database seed completed successfully!");
   } catch (error) {
-    console.error('❌ Error seeding database:', error);
+    console.error("❌ Error seeding database:", error);
     throw error;
   } finally {
     client.release();
@@ -214,7 +226,7 @@ async function seedDatabase() {
 }
 
 // Run the seed function
-seedDatabase().catch(err => {
+seedDatabase().catch((err) => {
   console.error(err);
   process.exit(1);
 });
