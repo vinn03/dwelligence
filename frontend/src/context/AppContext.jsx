@@ -55,6 +55,7 @@ export const AppProvider = ({ children }) => {
   const [detailedProperty, setDetailedProperty] = useState(null);
   const [detailedViewTab, setDetailedViewTab] = useState('details'); // 'details' | 'commute' | 'nearby'
   const [selectedRoutes, setSelectedRoutes] = useState([]); // Routes to render on map
+  const [selectedRouteIndex, setSelectedRouteIndex] = useState(0); // Which route is currently selected/highlighted
 
   // Persist workplace to localStorage
   useEffect(() => {
@@ -131,7 +132,9 @@ export const AppProvider = ({ children }) => {
     detailedViewTab,
     setDetailedViewTab,
     selectedRoutes,
-    setSelectedRoutes
+    setSelectedRoutes,
+    selectedRouteIndex,
+    setSelectedRouteIndex
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

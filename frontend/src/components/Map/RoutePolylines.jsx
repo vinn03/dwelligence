@@ -1,40 +1,52 @@
-import { useEffect, useState } from 'react';
-import { useMap } from '@vis.gl/react-google-maps';
-import { useAppContext } from '../../context/AppContext';
+import { useEffect, useState } from "react";
+import { useMap } from "@vis.gl/react-google-maps";
+import { useAppContext } from "../../context/AppContext";
 
 const RoutePolylines = () => {
-  const { selectedRoutes, detailedProperty } = useAppContext();
+  const { selectedRoutes, detailedProperty, selectedRouteIndex } =
+    useAppContext();
   const map = useMap();
   const [polylines, setPolylines] = useState([]);
 
   useEffect(() => {
-    if (!map || !window.google || !selectedRoutes || selectedRoutes.length === 0) {
+    if (
+      !map ||
+      !window.google ||
+      !selectedRoutes ||
+      selectedRoutes.length === 0
+    ) {
       // Clear existing polylines
-      polylines.forEach(polyline => polyline.setMap(null));
+      polylines.forEach((polyline) => polyline.setMap(null));
       setPolylines([]);
       return;
     }
 
     // Clear existing polylines
-    polylines.forEach(polyline => polyline.setMap(null));
+    polylines.forEach((polyline) => polyline.setMap(null));
 
     // Create new polylines for each route
     const newPolylines = selectedRoutes.map((route, index) => {
       // Decode the polyline string
-      const decodedPath = window.google.maps.geometry.encoding.decodePath(route.polyline);
+      const decodedPath = window.google.maps.geometry.encoding.decodePath(
+        route.polyline
+      );
+
+      // Check if this is the selected route
+      const isSelected = index === selectedRouteIndex;
 
       // Different colors for each route
-      const colors = ['#4285F4', '#34A853', '#FBBC04'];
-      const color = colors[index] || '#4285F4';
+      const colors = ["#4285F4", "#34A853", "#FBBC04"];
+      const color = colors[index] || "#4285F4";
 
-      // Create polyline
+      // Create polyline with different styles for selected/unselected
       const polyline = new window.google.maps.Polyline({
         path: decodedPath,
         geodesic: true,
         strokeColor: color,
-        strokeOpacity: 0.8,
-        strokeWeight: 5,
-        map: map
+        strokeOpacity: isSelected ? 1.0 : 0.8, // Selected route more opaque
+        strokeWeight: isSelected ? 7 : 4, // Selected route thicker
+        zIndex: isSelected ? 1000 : 100, // Selected route on top
+        map: map,
       });
 
       return polyline;
@@ -47,9 +59,11 @@ const RoutePolylines = () => {
       const bounds = new window.google.maps.LatLngBounds();
 
       // Add all route points to bounds
-      selectedRoutes.forEach(route => {
-        const decodedPath = window.google.maps.geometry.encoding.decodePath(route.polyline);
-        decodedPath.forEach(point => bounds.extend(point));
+      selectedRoutes.forEach((route) => {
+        const decodedPath = window.google.maps.geometry.encoding.decodePath(
+          route.polyline
+        );
+        decodedPath.forEach((point) => bounds.extend(point));
       });
 
       // Fit the map to show all routes
@@ -58,9 +72,9 @@ const RoutePolylines = () => {
 
     // Cleanup function
     return () => {
-      newPolylines.forEach(polyline => polyline.setMap(null));
+      newPolylines.forEach((polyline) => polyline.setMap(null));
     };
-  }, [map, selectedRoutes, detailedProperty]);
+  }, [map, selectedRoutes, detailedProperty, selectedRouteIndex]);
 
   // This component doesn't render anything directly
   // It manages polylines via the Google Maps API

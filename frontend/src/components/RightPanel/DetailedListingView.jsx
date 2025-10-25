@@ -3,7 +3,7 @@ import { useAppContext } from '../../context/AppContext';
 import { commuteAPI } from '../../services/api';
 
 const DetailedListingView = ({ property, onBack }) => {
-  const { workplace, transportMode, detailedViewTab, setDetailedViewTab, selectedRoutes, setSelectedRoutes } = useAppContext();
+  const { workplace, transportMode, detailedViewTab, setDetailedViewTab, selectedRoutes, setSelectedRoutes, selectedRouteIndex, setSelectedRouteIndex } = useAppContext();
   const [routes, setRoutes] = useState([]);
   const [loadingRoutes, setLoadingRoutes] = useState(false);
 
@@ -15,6 +15,7 @@ const DetailedListingView = ({ property, onBack }) => {
       // Clear routes when switching away from commute tab
       setRoutes([]);
       setSelectedRoutes([]);
+      setSelectedRouteIndex(0);
     }
   }, [detailedViewTab, workplace, property, transportMode]);
 
@@ -28,11 +29,17 @@ const DetailedListingView = ({ property, onBack }) => {
       );
       setRoutes(response.data);
       setSelectedRoutes(response.data); // Update context for map rendering
+      setSelectedRouteIndex(0); // Reset to first route
     } catch (error) {
       console.error('Error fetching routes:', error);
     } finally {
       setLoadingRoutes(false);
     }
+  };
+
+  // Handle route selection
+  const handleRouteClick = (routeIndex) => {
+    setSelectedRouteIndex(routeIndex);
   };
 
   const renderDetailsTab = () => (
@@ -167,13 +174,22 @@ const DetailedListingView = ({ property, onBack }) => {
 
     return (
       <div className="space-y-4">
-        {routes.map((route, index) => (
-          <div
-            key={route.routeIndex}
-            className="border border-gray-200 rounded-lg hover:border-primary-400 cursor-pointer transition-colors overflow-hidden"
-          >
-            {/* Route Header */}
-            <div className="p-3 bg-gray-50 border-b border-gray-200">
+        {routes.map((route, index) => {
+          const isSelected = selectedRouteIndex === route.routeIndex;
+          return (
+            <div
+              key={route.routeIndex}
+              onClick={() => handleRouteClick(route.routeIndex)}
+              className={`border-2 rounded-lg cursor-pointer transition-all overflow-hidden ${
+                isSelected
+                  ? 'border-primary-600 shadow-md'
+                  : 'border-gray-200 hover:border-primary-400'
+              }`}
+            >
+              {/* Route Header */}
+              <div className={`p-3 border-b ${
+                isSelected ? 'bg-primary-50 border-primary-200' : 'bg-gray-50 border-gray-200'
+              }`}>
               <div className="flex items-center justify-between">
                 <span className="text-lg font-bold text-primary-600">
                   {route.durationText}
@@ -254,7 +270,8 @@ const DetailedListingView = ({ property, onBack }) => {
               ))}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
