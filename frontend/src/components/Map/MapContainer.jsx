@@ -1,34 +1,48 @@
-import { APIProvider, Map, useMap } from '@vis.gl/react-google-maps';
-import { useAppContext } from '../../context/AppContext';
-import PropertyMarker from './PropertyMarker';
-import RoutePolylines from './RoutePolylines';
-import { useEffect, useCallback, useRef } from 'react';
-import { propertiesAPI } from '../../services/api';
-import { useCommuteCalculation } from '../../hooks/useCommuteCalculation';
+import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
+import { useAppContext } from "../../context/AppContext";
+import PropertyMarker from "./PropertyMarker";
+import RoutePolylines from "./RoutePolylines";
+import { useEffect, useCallback, useRef } from "react";
+import { propertiesAPI } from "../../services/api";
+import { useCommuteCalculation } from "../../hooks/useCommuteCalculation";
 
 const MapContent = () => {
-  const { visibleProperties, setVisibleProperties, workplace, mapBounds, setMapBounds, setLoading, detailedProperty, detailedViewTab } = useAppContext();
+  const {
+    visibleProperties,
+    setVisibleProperties,
+    workplace,
+    mapBounds,
+    setMapBounds,
+    setLoading,
+    detailedProperty,
+    detailedViewTab,
+  } = useAppContext();
   const map = useMap();
   const debounceTimer = useRef(null);
 
   // Determine if we should hide property markers
-  const shouldHideMarkers = detailedProperty && (detailedViewTab === 'commute' || detailedViewTab === 'nearby');
+  const shouldHideMarkers =
+    detailedProperty &&
+    (detailedViewTab === "commute" || detailedViewTab === "nearby");
 
   // Automatically calculate commutes when properties, workplace, or transport mode changes
   useCommuteCalculation();
 
   // Fetch properties within viewport bounds
-  const fetchPropertiesInBounds = useCallback(async (bounds) => {
-    try {
-      setLoading(true);
-      const response = await propertiesAPI.getInBounds(bounds);
-      setVisibleProperties(response.data);
-    } catch (error) {
-      console.error('Error fetching properties:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [setVisibleProperties, setLoading]);
+  const fetchPropertiesInBounds = useCallback(
+    async (bounds) => {
+      try {
+        setLoading(true);
+        const response = await propertiesAPI.getInBounds(bounds);
+        setVisibleProperties(response.data);
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setVisibleProperties, setLoading]
+  );
 
   // Handle map bounds changes (with debouncing)
   useEffect(() => {
@@ -51,7 +65,7 @@ const MapContent = () => {
             north: ne.lat(),
             south: sw.lat(),
             east: ne.lng(),
-            west: sw.lng()
+            west: sw.lng(),
           };
 
           fetchPropertiesInBounds(boundsObj);
@@ -60,7 +74,7 @@ const MapContent = () => {
     };
 
     // Listen for bounds changes
-    const listener = map.addListener('bounds_changed', handleBoundsChanged);
+    const listener = map.addListener("bounds_changed", handleBoundsChanged);
 
     // Initial fetch when map is ready
     handleBoundsChanged();
@@ -90,19 +104,16 @@ const MapContent = () => {
   return (
     <>
       {/* Render property markers (hidden when viewing commute/nearby tabs) */}
-      {!shouldHideMarkers && visibleProperties.map((property) => (
-        <PropertyMarker key={property.id} property={property} />
-      ))}
+      {!shouldHideMarkers &&
+        visibleProperties.map((property) => (
+          <PropertyMarker key={property.id} property={property} />
+        ))}
 
       {/* Render route polylines when viewing commute tab */}
       <RoutePolylines />
 
       {/* TODO: Render workplace marker if set */}
-      {workplace && (
-        <div>
-          {/* Workplace marker will go here */}
-        </div>
-      )}
+      {workplace && <div>{/* Workplace marker will go here */}</div>}
     </>
   );
 };
@@ -113,14 +124,15 @@ const MapContainer = () => {
   return (
     <APIProvider
       apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-      libraries={['places', 'geometry']} // Add geometry library for polyline decoding
+      libraries={["places", "geometry"]} // Add geometry library for polyline decoding
     >
       <Map
         defaultCenter={defaultCenter}
         defaultZoom={13}
         gestureHandling="greedy"
         disableDefaultUI={false}
-        mapId="dwelligence-map" // You can create a custom map ID in Google Cloud Console
+        clickableIcons={false}
+        mapId="e7aefce9a26a6f40196ae1b3"
         className="w-full h-full"
       >
         <MapContent />
