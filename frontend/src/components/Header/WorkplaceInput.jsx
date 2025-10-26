@@ -1,30 +1,39 @@
-import { useState, useRef, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { useMapsLibrary } from '@vis.gl/react-google-maps';
+import { useState, useRef, useEffect } from "react";
+import { useAppContext } from "../../context/AppContext";
+import { useMapsLibrary } from "@vis.gl/react-google-maps";
 
 const WorkplaceInput = () => {
   const { workplace, setWorkplace } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState("");
   const inputRef = useRef(null);
   const autocompleteRef = useRef(null);
-  const placesLibrary = useMapsLibrary('places');
+  const placesLibrary = useMapsLibrary("places");
+
+  // Populate address when modal opens and workplace exists
+  useEffect(() => {
+    if (isOpen && workplace) {
+      setAddress(workplace.formattedAddress || "");
+    } else if (!isOpen) {
+      setAddress("");
+    }
+  }, [isOpen, workplace]);
 
   // Initialize autocomplete when modal opens and places library is loaded
   useEffect(() => {
     if (!placesLibrary || !inputRef.current || !isOpen) return;
 
     const autocomplete = new placesLibrary.Autocomplete(inputRef.current, {
-      fields: ['formatted_address', 'geometry', 'name', 'place_id'],
-      types: ['geocode'],
-      componentRestrictions: { country: 'us' },
+      fields: ["formatted_address", "geometry", "name", "place_id"],
+      types: ["geocode"],
+      componentRestrictions: { country: "us" },
     });
 
-    autocomplete.addListener('place_changed', () => {
+    autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
 
       if (!place.geometry || !place.geometry.location) {
-        console.error('No geometry for selected place');
+        console.error("No geometry for selected place");
         return;
       }
 
@@ -47,7 +56,7 @@ const WorkplaceInput = () => {
     e.preventDefault();
     // If user manually entered address without selecting from autocomplete
     if (address && !autocompleteRef.current?.getPlace()?.geometry) {
-      console.log('Please select an address from the dropdown');
+      console.log("Please select an address from the dropdown");
       return;
     }
     setIsOpen(false);
@@ -73,7 +82,9 @@ const WorkplaceInput = () => {
           />
         </svg>
         <span className="text-sm font-medium">
-          {workplace ? workplace.formattedAddress || 'Workplace Set' : 'Set Workplace'}
+          {workplace
+            ? workplace.formattedAddress || "Workplace Set"
+            : "Set Workplace"}
         </span>
       </button>
 
@@ -92,20 +103,35 @@ const WorkplaceInput = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-4"
                 autoFocus
               />
-              <div className="flex gap-2 justify-end">
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-                >
-                  Set Workplace
-                </button>
+              <div className="flex gap-2 justify-between">
+                {workplace && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWorkplace(null);
+                      setIsOpen(false);
+                      setAddress("");
+                    }}
+                    className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-300"
+                  >
+                    Remove
+                  </button>
+                )}
+                <div className="flex gap-2 ml-auto">
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  >
+                    Set Workplace
+                  </button>
+                </div>
               </div>
             </form>
           </div>

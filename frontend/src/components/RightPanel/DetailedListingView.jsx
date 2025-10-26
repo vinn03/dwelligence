@@ -344,16 +344,18 @@ const DetailedListingView = ({ property, onBack }) => {
         >
           Details
         </button>
-        <button
-          onClick={() => setDetailedViewTab('commute')}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
-            detailedViewTab === 'commute'
-              ? 'border-b-2 border-primary-600 text-primary-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          Commute
-        </button>
+        {workplace && (
+          <button
+            onClick={() => setDetailedViewTab('commute')}
+            className={`flex-1 py-3 text-sm font-medium transition-colors ${
+              detailedViewTab === 'commute'
+                ? 'border-b-2 border-primary-600 text-primary-600'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Commute
+          </button>
+        )}
         <button
           onClick={() => setDetailedViewTab('nearby')}
           className={`flex-1 py-3 text-sm font-medium transition-colors ${
