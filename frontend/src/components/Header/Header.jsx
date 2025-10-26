@@ -28,6 +28,9 @@ const Header = () => {
           {/* Transport Mode Toggle */}
           <TransportModeToggle />
 
+          {/* Filters Button */}
+          <Filters />
+
           {/* Map Rendering Toggle */}
           <button
             onClick={() => setUseRasterMap(!useRasterMap)}
@@ -44,9 +47,6 @@ const Header = () => {
           >
             {useRasterMap ? "🖼️ Raster" : "🗺️ Vector"}
           </button>
-
-          {/* Filters Button */}
-          <Filters />
         </div>
 
         {/* Show prompt if workplace not set */}
