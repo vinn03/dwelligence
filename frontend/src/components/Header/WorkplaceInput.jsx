@@ -62,10 +62,24 @@ const WorkplaceInput = () => {
     setIsOpen(false);
   };
 
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <>
+    <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
       >
         <svg
@@ -88,11 +102,11 @@ const WorkplaceInput = () => {
         </span>
       </button>
 
-      {/* Modal */}
+      {/* Dropdown */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Set Your Workplace</h2>
+        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 w-[400px]">
+          <div className="p-4">
+            <h3 className="text-lg font-semibold mb-3">Set Your Workplace</h3>
             <form onSubmit={handleSetWorkplace}>
               <input
                 ref={inputRef}
@@ -137,7 +151,7 @@ const WorkplaceInput = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
