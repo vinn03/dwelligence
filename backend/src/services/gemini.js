@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
 /**
  * Parse natural language search query into structured filters
@@ -216,13 +216,13 @@ Property: ${property.address}
 
 User question: "${question}"
 
-Nearby places (from Google Places API):
+Nearby places (numbered list):
 ${
   nearbyPOIs.length > 0
     ? nearbyPOIs
         .map(
-          (poi) =>
-            `- ${poi.name} (${poi.types?.join(', ') || 'unknown type'})${poi.rating ? ` - Rating: ${poi.rating}/5` : ''}${poi.vicinity ? ` - ${poi.vicinity}` : ''}`
+          (poi, index) =>
+            `${index + 1}. ${poi.name} (${poi.types?.join(', ') || 'unknown type'})${poi.rating ? ` - Rating: ${poi.rating}/5` : ''}${poi.vicinity ? ` - ${poi.vicinity}` : ''}`
         )
         .join('\n')
     : 'No nearby places found for this query'
@@ -230,10 +230,13 @@ ${
 
 Provide a helpful, conversational answer that:
 1. Directly answers the user's question
-2. Mentions specific place names from the data
-3. Includes relevant details like ratings if available
-4. Is concise (2-4 sentences max)
-5. Suggests alternatives if exact match isn't found
+2. References specific places by their NUMBER (e.g., "Sightglass Coffee [4]" or "places like [1] and [3]")
+3. Mentions place names AND their numbers for easy reference
+4. Includes relevant details like ratings if available
+5. Is concise (2-4 sentences max)
+6. Suggests alternatives if exact match isn't found
+
+IMPORTANT: When mentioning a place, always include its number in square brackets like this: "Sightglass Coffee [4]"
 
 If no relevant places were found, suggest the user try a broader search or different amenity type.
 

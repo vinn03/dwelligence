@@ -144,14 +144,19 @@ const AskListingTab = ({ property }) => {
                     </p>
                     <div className="space-y-2">
                       {message.nearbyPOIs.map((poi, poiIndex) => (
-                        <div key={poiIndex} className="text-xs">
-                          <p className="font-medium text-gray-800">{poi.name}</p>
-                          {poi.rating && (
-                            <p className="text-gray-600">⭐ {poi.rating}/5</p>
-                          )}
-                          {poi.vicinity && (
-                            <p className="text-gray-500">{poi.vicinity}</p>
-                          )}
+                        <div key={poiIndex} className="text-xs flex gap-2">
+                          <span className="font-semibold text-gray-600 flex-shrink-0">
+                            {poiIndex + 1}.
+                          </span>
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-800">{poi.name}</p>
+                            {poi.rating && (
+                              <p className="text-gray-600">⭐ {poi.rating}/5</p>
+                            )}
+                            {poi.vicinity && (
+                              <p className="text-gray-500">{poi.vicinity}</p>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
