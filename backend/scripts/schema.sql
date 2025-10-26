@@ -52,34 +52,35 @@ CREATE TABLE IF NOT EXISTS commute_cache (
 CREATE INDEX IF NOT EXISTS idx_commute_cache_property ON commute_cache(property_id);
 CREATE INDEX IF NOT EXISTS idx_commute_cache_lookup ON commute_cache(property_id, workplace_lat, workplace_lng, transport_mode);
 
--- NOTE: The following tables are for future iterations and are commented out for now
+-- Amenities table (Iteration 2)
+-- Using simple lat/lng + H3 indexes for proximity queries
+CREATE TABLE IF NOT EXISTS amenities (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  type VARCHAR(50) NOT NULL, -- 'park', 'grocery', 'cafe', 'restaurant', 'transit_station', 'gym', 'pharmacy', 'community_center'
+  address TEXT,
+  lat DECIMAL(10, 8) NOT NULL,
+  lng DECIMAL(11, 8) NOT NULL,
+  h3_index_r7 VARCHAR(15), -- H3 resolution 7 (walkable, ~1.22km edge)
+  h3_index_r6 VARCHAR(15), -- H3 resolution 6 (bikeable, ~3.23km edge)
+  h3_index_r5 VARCHAR(15), -- H3 resolution 5 (drivable, ~8.54km edge)
+  osm_id VARCHAR(255), -- OpenStreetMap ID
+  created_at TIMESTAMP DEFAULT NOW()
+);
 
--- -- Amenities table (Iteration 2)
--- -- Using simple lat/lng + H3 indexes for proximity queries
--- CREATE TABLE IF NOT EXISTS amenities (
---   id SERIAL PRIMARY KEY,
---   name TEXT NOT NULL,
---   type VARCHAR(50) NOT NULL, -- 'park', 'cafe', 'restaurant', 'grocery', 'gym', 'transit_stop'
---   address TEXT,
---   lat DECIMAL(10, 8) NOT NULL,
---   lng DECIMAL(11, 8) NOT NULL,
---   h3_index_r7 VARCHAR(15), -- H3 resolution 7 (walkable, ~1.22km edge)
---   h3_index_r6 VARCHAR(15), -- H3 resolution 6 (bikeable, ~3.23km edge)
---   h3_index_r5 VARCHAR(15), -- H3 resolution 5 (drivable, ~8.54km edge)
---   google_place_id VARCHAR(255),
---   created_at TIMESTAMP DEFAULT NOW()
--- );
+CREATE INDEX IF NOT EXISTS idx_amenities_type ON amenities(type);
+CREATE INDEX IF NOT EXISTS idx_amenities_h3_r7 ON amenities(h3_index_r7);
+CREATE INDEX IF NOT EXISTS idx_amenities_h3_r6 ON amenities(h3_index_r6);
+CREATE INDEX IF NOT EXISTS idx_amenities_h3_r5 ON amenities(h3_index_r5);
+CREATE INDEX IF NOT EXISTS idx_amenities_type_h3_r7 ON amenities(type, h3_index_r7);
+CREATE INDEX IF NOT EXISTS idx_amenities_type_h3_r6 ON amenities(type, h3_index_r6);
+CREATE INDEX IF NOT EXISTS idx_amenities_type_h3_r5 ON amenities(type, h3_index_r5);
 
--- CREATE INDEX IF NOT EXISTS idx_amenities_type ON amenities(type);
--- CREATE INDEX IF NOT EXISTS idx_amenities_h3_r7 ON amenities(h3_index_r7);
--- CREATE INDEX IF NOT EXISTS idx_amenities_h3_r6 ON amenities(h3_index_r6);
--- CREATE INDEX IF NOT EXISTS idx_amenities_h3_r5 ON amenities(h3_index_r5);
+-- H3 columns for properties (Iteration 2)
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS h3_index_r7 VARCHAR(15);
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS h3_index_r6 VARCHAR(15);
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS h3_index_r5 VARCHAR(15);
 
--- -- H3 columns for properties (Iteration 2)
--- ALTER TABLE properties ADD COLUMN IF NOT EXISTS h3_index_r7 VARCHAR(15);
--- ALTER TABLE properties ADD COLUMN IF NOT EXISTS h3_index_r6 VARCHAR(15);
--- ALTER TABLE properties ADD COLUMN IF NOT EXISTS h3_index_r5 VARCHAR(15);
-
--- CREATE INDEX IF NOT EXISTS idx_properties_h3_r7 ON properties(h3_index_r7);
--- CREATE INDEX IF NOT EXISTS idx_properties_h3_r6 ON properties(h3_index_r6);
--- CREATE INDEX IF NOT EXISTS idx_properties_h3_r5 ON properties(h3_index_r5);
+CREATE INDEX IF NOT EXISTS idx_properties_h3_r7 ON properties(h3_index_r7);
+CREATE INDEX IF NOT EXISTS idx_properties_h3_r6 ON properties(h3_index_r6);
+CREATE INDEX IF NOT EXISTS idx_properties_h3_r5 ON properties(h3_index_r5);
