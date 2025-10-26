@@ -431,9 +431,14 @@ const DetailedListingView = ({ property, onBack }) => {
         {/* Header with transport mode info */}
         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
           <span className="text-2xl">{modeInfo.emoji}</span>
-          <div>
+          <div className="flex-1">
             <p className="text-sm font-semibold text-gray-900">{modeInfo.label}</p>
             <p className="text-xs text-gray-600">Approximately {modeInfo.range}</p>
+            {transportMode === 'transit' && (
+              <p className="text-xs text-gray-500 mt-1 italic">
+                Note: Transit mode shows amenities within walking distance, as most transit users walk to reach nearby amenities.
+              </p>
+            )}
           </div>
         </div>
 
