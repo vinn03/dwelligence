@@ -70,6 +70,9 @@ export const AppProvider = ({ children }) => {
   const [aiResults, setAiResults] = useState([]); // Properties from AI search
   const [aiInterpretation, setAiInterpretation] = useState(null); // { query, summary, totalResults }
 
+  // POI markers for Ask AI feature
+  const [poiMarkers, setPoiMarkers] = useState([]); // POIs to display on map when using Ask AI
+
   // Persist workplace to localStorage
   useEffect(() => {
     if (workplace) {
@@ -178,7 +181,11 @@ export const AppProvider = ({ children }) => {
     aiResults,
     setAiResults,
     aiInterpretation,
-    setAiInterpretation
+    setAiInterpretation,
+
+    // POI markers
+    poiMarkers,
+    setPoiMarkers
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

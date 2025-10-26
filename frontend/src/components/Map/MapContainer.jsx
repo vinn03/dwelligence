@@ -5,6 +5,7 @@ import RoutePolylines from "./RoutePolylines";
 import AmenityMarkers from "./AmenityMarkers";
 import PropertyCenterMarker from "./PropertyCenterMarker";
 import WorkplaceMarker from "./WorkplaceMarker";
+import POIMarkers from "./POIMarkers";
 import { useEffect, useCallback, useRef } from "react";
 import { propertiesAPI } from "../../services/api";
 
@@ -159,6 +160,9 @@ const MapContent = () => {
 
       {/* Render amenity markers when viewing nearby tab */}
       <AmenityMarkers />
+
+      {/* Render POI markers when viewing ask tab */}
+      <POIMarkers />
 
       {/* Render property home marker when viewing detailed property (details, commute, nearby) */}
       <PropertyCenterMarker />

@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import TabsContainer from './TabsContainer';
-import Listing from '../Listing/Listing';
-import DetailedListingView from './DetailedListingView';
+import { useEffect } from "react";
+import { useAppContext } from "../../context/AppContext";
+import TabsContainer from "./TabsContainer";
+import Listing from "../Listing/Listing";
+import DetailedListingView from "./DetailedListingView";
 
 const RightPanel = () => {
   const {
@@ -20,12 +20,12 @@ const RightPanel = () => {
     setSelectedRouteIndex,
     setDetailedViewTab,
     aiResults,
-    aiInterpretation
+    aiInterpretation,
   } = useAppContext();
 
   // Cache visible properties that are favorited
   useEffect(() => {
-    visibleProperties.forEach(property => {
+    visibleProperties.forEach((property) => {
       if (favorites.includes(property.id)) {
         addPropertyToFavoritesCache(property);
       }
@@ -46,8 +46,8 @@ const RightPanel = () => {
         return property.commute?.duration || 999999; // Properties without commute go to bottom
       };
 
-      const scoreA = (getDurationSeconds(a) * 0.5) + (a.price * 0.5);
-      const scoreB = (getDurationSeconds(b) * 0.5) + (b.price * 0.5);
+      const scoreA = getDurationSeconds(a) * 0.5 + a.price * 0.5;
+      const scoreB = getDurationSeconds(b) * 0.5 + b.price * 0.5;
 
       return scoreA - scoreB;
     });
@@ -67,18 +67,19 @@ const RightPanel = () => {
     }
 
     let propertiesToShow = [];
-    let emptyMessage = '';
+    let emptyMessage = "";
 
-    if (activeTab === 'top') {
+    if (activeTab === "top") {
       const sortedProperties = getSortedProperties();
       propertiesToShow = sortedProperties.slice(0, 20); // Top 20
-      emptyMessage = 'No properties found in this area.';
-    } else if (activeTab === 'favorites') {
+      emptyMessage = "No properties found in this area.";
+    } else if (activeTab === "favorites") {
       propertiesToShow = favoriteProperties;
-      emptyMessage = 'No favorites yet. Click the heart icon on any listing to save it.';
-    } else if (activeTab === 'ai-results') {
+      emptyMessage =
+        "No favorites yet. Click the heart icon on any listing to save it.";
+    } else if (activeTab === "ai-results") {
       propertiesToShow = aiResults || [];
-      emptyMessage = 'No AI search results yet. Try using the Ask search mode.';
+      emptyMessage = "No AI search results yet. Try using the Ask search mode.";
     }
 
     if (propertiesToShow.length === 0) {
@@ -92,7 +93,11 @@ const RightPanel = () => {
     return (
       <div className="grid grid-cols-2 gap-4">
         {propertiesToShow.map((property) => (
-          <div key={property.id} className="cursor-pointer" onClick={() => setDetailedProperty(property)}>
+          <div
+            key={property.id}
+            className="cursor-pointer"
+            onClick={() => setDetailedProperty(property)}
+          >
             <Listing property={property} compact={true} />
           </div>
         ))}
@@ -110,7 +115,7 @@ const RightPanel = () => {
             setDetailedProperty(null);
             setSelectedRoutes([]);
             setSelectedRouteIndex(0);
-            setDetailedViewTab('details');
+            setDetailedViewTab("details");
           }}
         />
       </div>
@@ -125,7 +130,7 @@ const RightPanel = () => {
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4">
         {/* Show AI interpretation banner if on AI Results tab */}
-        {activeTab === 'ai-results' && aiInterpretation && (
+        {activeTab === "ai-results" && aiInterpretation && (
           <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-4">
             <div className="flex items-start gap-2">
               <svg
@@ -146,7 +151,8 @@ const RightPanel = () => {
                   {aiInterpretation.summary}
                 </p>
                 <p className="text-xs text-primary-700 mt-1">
-                  Found {aiInterpretation.totalResults} properties matching your query
+                  Found {aiInterpretation.totalResults} properties matching your
+                  query
                 </p>
               </div>
             </div>
@@ -154,7 +160,7 @@ const RightPanel = () => {
         )}
 
         {/* Show workplace prompt if not set */}
-        {!workplace && activeTab === 'top' && (
+        {!workplace && activeTab === "top" && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
             <p className="text-sm text-blue-800">
               Set your workplace to see properties ranked by commute time

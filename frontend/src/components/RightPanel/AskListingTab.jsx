@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useAppContext } from '../../context/AppContext';
 
 const AskListingTab = ({ property }) => {
+  const { setPoiMarkers } = useAppContext();
   const [question, setQuestion] = useState('');
   const [messages, setMessages] = useState([]);
   const [isAsking, setIsAsking] = useState(false);
@@ -61,6 +63,11 @@ const AskListingTab = ({ property }) => {
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+
+      // Update map with POI markers
+      if (data.nearbyPOIs && data.nearbyPOIs.length > 0) {
+        setPoiMarkers(data.nearbyPOIs);
+      }
     } catch (error) {
       console.error('[AskListingTab] Error:', error);
 

@@ -17,6 +17,7 @@ const DetailedListingView = ({ property, onBack }) => {
     toggleFavorite,
     amenityVisualization,
     setAmenityVisualization,
+    setPoiMarkers,
   } = useAppContext();
   const [routes, setRoutes] = useState([]);
   const [loadingRoutes, setLoadingRoutes] = useState(false);
@@ -84,6 +85,13 @@ const DetailedListingView = ({ property, onBack }) => {
   const handleRouteClick = (routeIndex) => {
     setSelectedRouteIndex(routeIndex);
   };
+
+  // Clear POI markers when leaving ask tab
+  useEffect(() => {
+    if (detailedViewTab !== 'ask') {
+      setPoiMarkers([]);
+    }
+  }, [detailedViewTab, setPoiMarkers]);
 
   const renderDetailsTab = () => (
     <div className="space-y-4">
