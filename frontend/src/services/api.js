@@ -17,7 +17,7 @@ export const propertiesAPI = {
   },
 
   // Get properties within map bounds with filters
-  getInBounds: (bounds, filters = {}, transportMode = 'walking', selectedAmenities = []) => {
+  getInBounds: (bounds, filters = {}, transportMode = 'walking') => {
     // Only include non-null filter values
     const filterParams = {};
     if (filters.minPrice) filterParams.minPrice = filters.minPrice;
@@ -28,11 +28,6 @@ export const propertiesAPI = {
 
     // Add transport mode
     if (transportMode) filterParams.transportMode = transportMode;
-
-    // Add amenities as comma-separated string
-    if (selectedAmenities.length > 0) {
-      filterParams.amenities = selectedAmenities.join(',');
-    }
 
     return api.get('/properties/map-bounds', {
       params: { ...bounds, ...filterParams }

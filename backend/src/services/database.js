@@ -113,7 +113,7 @@ export const db = {
   /**
    * Get properties within map bounds with optional filters and amenity counts
    */
-  async getPropertiesInBounds(bounds, filters = {}, transportMode = 'walking', selectedAmenities = []) {
+  async getPropertiesInBounds(bounds, filters = {}, transportMode = 'walking') {
     const { north, south, east, west } = bounds;
     const { minPrice, maxPrice, bedrooms, bathrooms, propertyType, listingType } = filters;
 

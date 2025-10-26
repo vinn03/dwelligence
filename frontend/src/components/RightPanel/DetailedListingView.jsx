@@ -355,7 +355,7 @@ const DetailedListingView = ({ property, onBack }) => {
   };
 
   const renderNearbyTab = () => {
-    // Amenity types with emojis (matching AmenitiesToggle component)
+    // Amenity types with emojis
     const amenityTypes = [
       { id: 'park', label: 'Parks', emoji: '🌳' },
       { id: 'grocery', label: 'Groceries', emoji: '🛒' },

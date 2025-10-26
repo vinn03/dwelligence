@@ -13,13 +13,11 @@ const MapContent = () => {
     setVisibleProperties,
     workplace,
     mapBounds,
-    setMapBounds,
     setLoading,
     detailedProperty,
     detailedViewTab,
     filters,
     transportMode,
-    selectedAmenities,
     useRasterMap,
     setUseRasterMap,
   } = useAppContext();
@@ -41,8 +39,7 @@ const MapContent = () => {
         const response = await propertiesAPI.getInBounds(
           bounds,
           filters,
-          transportMode,
-          selectedAmenities
+          transportMode
         );
         setVisibleProperties(response.data);
       } catch (error) {
@@ -51,13 +48,7 @@ const MapContent = () => {
         setLoading(false);
       }
     },
-    [
-      setVisibleProperties,
-      setLoading,
-      filters,
-      transportMode,
-      selectedAmenities,
-    ]
+    [setVisibleProperties, setLoading, filters, transportMode]
   );
 
   // Handle map bounds changes (with debouncing)
