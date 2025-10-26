@@ -66,6 +66,12 @@ const AmenityMarkers = () => {
 
       // Add click listener to show info window
       marker.addListener('click', () => {
+        const distanceText = amenity.distance
+          ? amenity.distance < 1000
+            ? `${amenity.distance}m away`
+            : `${(amenity.distance / 1000).toFixed(1)}km away`
+          : '';
+
         const content = `
           <div style="padding: 8px; min-width: 150px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
@@ -77,6 +83,11 @@ const AmenityMarkers = () => {
             <p style="margin: 4px 0 0 0; font-size: 12px; color: #6b7280; text-transform: capitalize;">
               ${amenity.type.replace('_', ' ')}
             </p>
+            ${distanceText ? `
+              <p style="margin: 4px 0 0 0; font-size: 12px; font-weight: 600; color: #059669;">
+                ${distanceText}
+              </p>
+            ` : ''}
             ${amenity.address ? `
               <p style="margin: 4px 0 0 0; font-size: 11px; color: #9ca3af;">
                 ${amenity.address}

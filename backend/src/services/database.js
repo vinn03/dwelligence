@@ -343,16 +343,39 @@ export const db = {
     const boundary = cellToBoundary(h3Index, true); // true for [lat, lng] format
     const hexBoundary = boundary.map(([lat, lng]) => ({ lat, lng }));
 
-    // Get all amenities in this hex
+    // Get only the closest amenity of each type using distance calculation
     const amenitiesQuery = `
-      SELECT
-        id, name, type, address, lat, lng, osm_id
-      FROM amenities
-      WHERE ${h3Resolution} = $1
-      ORDER BY type, name
+      WITH distances AS (
+        SELECT
+          id, name, type, address, lat, lng, osm_id,
+          (
+            6371000 * acos(
+              cos(radians($2)) * cos(radians(lat)) *
+              cos(radians(lng) - radians($3)) +
+              sin(radians($2)) * sin(radians(lat))
+            )
+          ) as distance_meters,
+          ROW_NUMBER() OVER (PARTITION BY type ORDER BY (
+            6371000 * acos(
+              cos(radians($2)) * cos(radians(lat)) *
+              cos(radians(lng) - radians($3)) +
+              sin(radians($2)) * sin(radians(lat))
+            )
+          )) as rn
+        FROM amenities
+        WHERE ${h3Resolution} = $1
+      )
+      SELECT id, name, type, address, lat, lng, osm_id, distance_meters
+      FROM distances
+      WHERE rn = 1
+      ORDER BY type
     `;
 
-    const amenitiesResult = await pool.query(amenitiesQuery, [h3Index]);
+    const amenitiesResult = await pool.query(amenitiesQuery, [
+      h3Index,
+      property.lat,
+      property.lng
+    ]);
 
     const amenities = amenitiesResult.rows.map(row => ({
       id: row.id,
@@ -361,7 +384,8 @@ export const db = {
       address: row.address,
       lat: parseFloat(row.lat),
       lng: parseFloat(row.lng),
-      osmId: row.osm_id
+      osmId: row.osm_id,
+      distance: Math.round(parseFloat(row.distance_meters))
     }));
 
     return {
