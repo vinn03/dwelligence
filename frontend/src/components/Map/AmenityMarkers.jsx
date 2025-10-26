@@ -22,7 +22,11 @@ const AmenityMarkers = () => {
 
   useEffect(() => {
     // Clear existing markers and info window
-    markers.forEach(marker => marker.setMap(null));
+    markers.forEach(marker => {
+      if (marker.setMap) {
+        marker.setMap(null);
+      }
+    });
     if (infoWindow) {
       infoWindow.close();
       setInfoWindow(null);
@@ -48,24 +52,68 @@ const AmenityMarkers = () => {
     const newMarkers = amenityVisualization.amenities.map((amenity) => {
       const config = amenityConfig[amenity.type] || { emoji: '📍', color: '#6b7280' };
 
-      // Create custom marker with emoji
-      const marker = new window.google.maps.Marker({
-        position: { lat: amenity.lat, lng: amenity.lng },
-        map: map,
-        title: amenity.name || amenity.type,
-        icon: {
-          path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 12,
-          fillColor: config.color,
-          fillOpacity: 0.9,
-          strokeColor: '#ffffff',
-          strokeWeight: 2,
-        },
-        zIndex: 100
-      });
+      // Create custom HTML marker with emoji
+      const markerDiv = document.createElement('div');
+      markerDiv.style.cssText = `
+        width: 40px;
+        height: 40px;
+        background-color: ${config.color};
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+        transition: transform 0.2s;
+      `;
+      markerDiv.innerHTML = config.emoji;
+      markerDiv.onmouseenter = () => markerDiv.style.transform = 'scale(1.15)';
+      markerDiv.onmouseleave = () => markerDiv.style.transform = 'scale(1)';
 
-      // Add click listener to show info window
-      marker.addListener('click', () => {
+      // Create marker using OverlayView for custom HTML
+      class CustomMarker extends window.google.maps.OverlayView {
+        constructor(position, content) {
+          super();
+          this.position = position;
+          this.content = content;
+        }
+
+        onAdd() {
+          this.div = this.content;
+          const panes = this.getPanes();
+          panes.overlayMouseTarget.appendChild(this.div);
+        }
+
+        draw() {
+          const overlayProjection = this.getProjection();
+          const position = overlayProjection.fromLatLngToDivPixel(
+            new window.google.maps.LatLng(this.position.lat, this.position.lng)
+          );
+          if (position) {
+            this.div.style.left = (position.x - 20) + 'px';
+            this.div.style.top = (position.y - 20) + 'px';
+            this.div.style.position = 'absolute';
+          }
+        }
+
+        onRemove() {
+          if (this.div) {
+            this.div.parentNode.removeChild(this.div);
+            this.div = null;
+          }
+        }
+      }
+
+      const marker = new CustomMarker(
+        { lat: amenity.lat, lng: amenity.lng },
+        markerDiv
+      );
+      marker.setMap(map);
+
+      // Add click listener to the div element
+      markerDiv.addEventListener('click', () => {
         const distanceText = amenity.distance
           ? amenity.distance < 1000
             ? `${amenity.distance}m away`
@@ -96,7 +144,8 @@ const AmenityMarkers = () => {
           </div>
         `;
         newInfoWindow.setContent(content);
-        newInfoWindow.open(map, marker);
+        newInfoWindow.setPosition(new window.google.maps.LatLng(amenity.lat, amenity.lng));
+        newInfoWindow.open(map);
       });
 
       return marker;
@@ -106,7 +155,11 @@ const AmenityMarkers = () => {
 
     // Cleanup
     return () => {
-      newMarkers.forEach(marker => marker.setMap(null));
+      newMarkers.forEach(marker => {
+        if (marker.setMap) {
+          marker.setMap(null);
+        }
+      });
       if (newInfoWindow) {
         newInfoWindow.close();
       }

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 import { useAppContext } from "../../context/AppContext";
+import Tooltip from "./Tooltip";
 
 const PropertyCenterMarker = () => {
   const { detailedProperty, detailedViewTab } = useAppContext();
   const map = useMap();
   const [marker, setMarker] = useState(null);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     // Clear existing marker
@@ -21,6 +23,7 @@ const PropertyCenterMarker = () => {
       !detailedProperty ||
       detailedViewTab !== 'nearby'
     ) {
+      setShowTooltip(false);
       return;
     }
 
@@ -45,25 +48,8 @@ const PropertyCenterMarker = () => {
       }
     });
 
-    // Add info window
-    const infoWindow = new window.google.maps.InfoWindow({
-      content: `
-        <div style="padding: 8px;">
-          <h3 style="margin: 0 0 4px 0; font-weight: 600; font-size: 14px; color: #111827;">
-            ${detailedProperty.address}
-          </h3>
-          <p style="margin: 4px 0 0 0; font-size: 13px; font-weight: 600; color: #dc2626;">
-            $${detailedProperty.price.toLocaleString()}${detailedProperty.sale_type === 'rent' ? '/mo' : ''}
-          </p>
-          <p style="margin: 4px 0 0 0; font-size: 12px; color: #6b7280;">
-            ${detailedProperty.bedrooms} bd • ${detailedProperty.bathrooms} ba
-          </p>
-        </div>
-      `
-    });
-
     propertyMarker.addListener('click', () => {
-      infoWindow.open(map, propertyMarker);
+      setShowTooltip(true);
     });
 
     setMarker(propertyMarker);
@@ -73,11 +59,20 @@ const PropertyCenterMarker = () => {
       if (propertyMarker) {
         propertyMarker.setMap(null);
       }
+      setShowTooltip(false);
     };
   }, [map, detailedProperty, detailedViewTab]);
 
-  // This component doesn't render anything directly
-  return null;
+  return (
+    <>
+      {showTooltip && detailedProperty && (
+        <Tooltip
+          property={detailedProperty}
+          onClose={() => setShowTooltip(false)}
+        />
+      )}
+    </>
+  );
 };
 
 export default PropertyCenterMarker;
