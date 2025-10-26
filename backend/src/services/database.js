@@ -343,7 +343,22 @@ export const db = {
     const boundary = cellToBoundary(h3Index, true); // true for [lat, lng] format
     const hexBoundary = boundary.map(([lat, lng]) => ({ lat, lng }));
 
-    // Get only the closest amenity of each type using distance calculation
+    // First, get total counts of each amenity type
+    const countsQuery = `
+      SELECT type, COUNT(*) as count
+      FROM amenities
+      WHERE ${h3Resolution} = $1
+      GROUP BY type
+    `;
+
+    const countsResult = await pool.query(countsQuery, [h3Index]);
+
+    const amenityCounts = {};
+    countsResult.rows.forEach(row => {
+      amenityCounts[row.type] = parseInt(row.count);
+    });
+
+    // Then get only the closest amenity of each type using distance calculation
     const amenitiesQuery = `
       WITH distances AS (
         SELECT
@@ -392,6 +407,7 @@ export const db = {
       property,
       hexBoundary,
       amenities,
+      amenityCounts,
       h3Index,
       transportMode
     };

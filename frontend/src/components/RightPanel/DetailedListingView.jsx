@@ -379,13 +379,8 @@ const DetailedListingView = ({ property, onBack }) => {
       );
     }
 
-    // Count amenities by type
-    const amenityCounts = {};
-    if (amenityVisualization && amenityVisualization.amenities) {
-      amenityVisualization.amenities.forEach(amenity => {
-        amenityCounts[amenity.type] = (amenityCounts[amenity.type] || 0) + 1;
-      });
-    }
+    // Get amenity counts from the response (calculated before filtering to closest)
+    const amenityCounts = amenityVisualization?.amenityCounts || {};
 
     // Check if any amenity data is available
     const hasAmenityData = Object.values(amenityCounts).some(count => count > 0);
@@ -414,6 +409,7 @@ const DetailedListingView = ({ property, onBack }) => {
     const modeInfo = getTransportModeInfo();
 
     const totalAmenities = Object.values(amenityCounts).reduce((sum, count) => sum + count, 0);
+    const amenityTypesCount = Object.values(amenityCounts).filter(count => count > 0).length;
 
     return (
       <div className="space-y-4">
@@ -423,10 +419,10 @@ const DetailedListingView = ({ property, onBack }) => {
             <span className="text-lg">📍</span>
             <div>
               <p className="text-sm font-semibold text-blue-900">
-                {totalAmenities} amenities visualized on map
+                Showing closest amenity of each type
               </p>
               <p className="text-xs text-blue-700 mt-0.5">
-                Markers show all amenities within the coverage area for this property.
+                {amenityTypesCount} marker{amenityTypesCount !== 1 ? 's' : ''} on map represent the nearest of {totalAmenities} total amenities in this area.
               </p>
             </div>
           </div>
