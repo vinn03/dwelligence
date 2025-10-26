@@ -110,75 +110,106 @@ export const db = {
   },
 
   /**
-   * Get properties within map bounds with optional filters
+   * Get properties within map bounds with optional filters and amenity counts
    */
-  async getPropertiesInBounds(bounds, filters = {}) {
+  async getPropertiesInBounds(bounds, filters = {}, transportMode = 'walking', selectedAmenities = []) {
     const { north, south, east, west } = bounds;
     const { minPrice, maxPrice, bedrooms, bathrooms, propertyType, listingType } = filters;
 
+    // Determine H3 resolution based on transport mode
+    const h3Resolution = {
+      'walking': 'h3_index_r7',
+      'bicycling': 'h3_index_r6',
+      'driving': 'h3_index_r5',
+      'transit': 'h3_index_r7' // transit users walk to/from stops
+    }[transportMode] || 'h3_index_r7';
+
+    // Build amenity counts for all 8 types
+    const amenityTypes = ['park', 'grocery', 'cafe', 'restaurant', 'transit_station', 'gym', 'pharmacy', 'community_center'];
+
+    const amenityCounts = amenityTypes.map(type =>
+      `COUNT(DISTINCT CASE WHEN a.type = '${type}' THEN a.id END) as ${type}_count`
+    ).join(',\n        ');
+
     let query = `
       SELECT
-        id,
-        name,
-        address,
-        lat,
-        lng,
-        price,
-        bedrooms,
-        bathrooms,
-        sq_ft,
-        property_type,
-        sale_type,
-        description,
-        image_url
-      FROM properties
-      WHERE lat BETWEEN $1 AND $2
-        AND lng BETWEEN $3 AND $4
+        p.id,
+        p.name,
+        p.address,
+        p.lat,
+        p.lng,
+        p.price,
+        p.bedrooms,
+        p.bathrooms,
+        p.sq_ft,
+        p.property_type,
+        p.sale_type,
+        p.description,
+        p.image_url,
+        ${amenityCounts}
+      FROM properties p
+      LEFT JOIN amenities a ON p.${h3Resolution} = a.${h3Resolution}
+      WHERE p.lat BETWEEN $1 AND $2
+        AND p.lng BETWEEN $3 AND $4
     `;
 
     const params = [south, north, west, east];
     let paramCount = 5;
 
     if (minPrice) {
-      query += ` AND price >= $${paramCount}`;
+      query += ` AND p.price >= $${paramCount}`;
       params.push(parseFloat(minPrice));
       paramCount++;
     }
 
     if (maxPrice) {
-      query += ` AND price <= $${paramCount}`;
+      query += ` AND p.price <= $${paramCount}`;
       params.push(parseFloat(maxPrice));
       paramCount++;
     }
 
     if (bedrooms) {
-      query += ` AND bedrooms = $${paramCount}`;
+      query += ` AND p.bedrooms = $${paramCount}`;
       params.push(parseInt(bedrooms));
       paramCount++;
     }
 
     if (bathrooms) {
-      query += ` AND bathrooms >= $${paramCount}`;
+      query += ` AND p.bathrooms >= $${paramCount}`;
       params.push(parseFloat(bathrooms));
       paramCount++;
     }
 
     if (propertyType) {
-      query += ` AND property_type = $${paramCount}`;
+      query += ` AND p.property_type = $${paramCount}`;
       params.push(propertyType);
       paramCount++;
     }
 
     if (listingType) {
-      query += ` AND sale_type = $${paramCount}`;
+      query += ` AND p.sale_type = $${paramCount}`;
       params.push(listingType);
       paramCount++;
     }
 
+    query += ` GROUP BY p.id, p.name, p.address, p.lat, p.lng, p.price, p.bedrooms, p.bathrooms, p.sq_ft, p.property_type, p.sale_type, p.description, p.image_url`;
     query += ' LIMIT 100'; // Reasonable limit for map viewport
 
     const result = await pool.query(query, params);
-    return result.rows.map(transformProperty);
+
+    return result.rows.map(row => ({
+      ...transformProperty(row),
+      amenityCounts: {
+        park: parseInt(row.park_count) || 0,
+        grocery: parseInt(row.grocery_count) || 0,
+        cafe: parseInt(row.cafe_count) || 0,
+        restaurant: parseInt(row.restaurant_count) || 0,
+        transit_station: parseInt(row.transit_station_count) || 0,
+        gym: parseInt(row.gym_count) || 0,
+        pharmacy: parseInt(row.pharmacy_count) || 0,
+        community_center: parseInt(row.community_center_count) || 0
+      }
+    }));
   },
 
   /**

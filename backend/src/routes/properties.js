@@ -44,7 +44,9 @@ router.get('/map-bounds', async (req, res, next) => {
       bedrooms,
       bathrooms,
       propertyType,
-      listingType
+      listingType,
+      transportMode, // 'walking', 'bicycling', 'driving', 'transit'
+      amenities // Comma-separated amenity types: 'park,cafe,grocery'
     } = req.query;
 
     if (!north || !south || !east || !west) {
@@ -69,8 +71,16 @@ router.get('/map-bounds', async (req, res, next) => {
       listingType
     };
 
-    // TODO: Implement bounds + filters query
-    const properties = await db.getPropertiesInBounds(bounds, filters);
+    // Parse amenities filter
+    const selectedAmenities = amenities ? amenities.split(',').filter(Boolean) : [];
+
+    // Get properties with amenity counts
+    const properties = await db.getPropertiesInBounds(
+      bounds,
+      filters,
+      transportMode || 'walking',
+      selectedAmenities
+    );
 
     res.json(properties);
   } catch (error) {
