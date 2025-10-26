@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import TabsContainer from './TabsContainer';
 import Listing from '../Listing/Listing';
@@ -9,6 +10,8 @@ const RightPanel = () => {
     setActiveTab,
     visibleProperties,
     favorites,
+    favoriteProperties,
+    addPropertyToFavoritesCache,
     loading,
     calculatingCommutes,
     workplace,
@@ -19,10 +22,14 @@ const RightPanel = () => {
     setDetailedViewTab
   } = useAppContext();
 
-  // Get favorite properties
-  const favoriteProperties = visibleProperties.filter((p) =>
-    favorites.includes(p.id)
-  );
+  // Cache visible properties that are favorited
+  useEffect(() => {
+    visibleProperties.forEach(property => {
+      if (favorites.includes(property.id)) {
+        addPropertyToFavoritesCache(property);
+      }
+    });
+  }, [visibleProperties, favorites, addPropertyToFavoritesCache]);
 
   // Sort properties by commute-aware ranking (for Top tab)
   const getSortedProperties = () => {

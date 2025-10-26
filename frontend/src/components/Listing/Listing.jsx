@@ -51,7 +51,7 @@ const Listing = ({ property, compact = false, showClose = false, onClose = null 
         <button
           onClick={(e) => {
             e.stopPropagation();
-            toggleFavorite(property.id);
+            toggleFavorite(property.id, property);
           }}
           className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
         >

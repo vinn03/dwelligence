@@ -316,7 +316,7 @@ const DetailedListingView = ({ property, onBack }) => {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            toggleFavorite(property.id);
+            toggleFavorite(property.id, property);
           }}
           className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
         >

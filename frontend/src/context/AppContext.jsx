@@ -41,6 +41,9 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Favorite properties cache (full property objects)
+  const [favoriteProperties, setFavoriteProperties] = useState([]);
+
   // Map bounds state
   const [mapBounds, setMapBounds] = useState(null);
 
@@ -71,12 +74,29 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('favorites', JSON.stringify(favorites));
   }, [favorites]);
 
+  // Add property to favorites cache
+  const addPropertyToFavoritesCache = (property) => {
+    setFavoriteProperties(prev => {
+      // Check if property already exists in cache
+      if (prev.some(p => p.id === property.id)) {
+        return prev;
+      }
+      return [...prev, property];
+    });
+  };
+
   // Toggle favorite
-  const toggleFavorite = (propertyId) => {
+  const toggleFavorite = (propertyId, property = null) => {
     setFavorites(prev => {
       if (prev.includes(propertyId)) {
+        // Remove from favorites
+        setFavoriteProperties(prevProps => prevProps.filter(p => p.id !== propertyId));
         return prev.filter(id => id !== propertyId);
       } else {
+        // Add to favorites
+        if (property) {
+          addPropertyToFavoritesCache(property);
+        }
         return [...prev, propertyId];
       }
     });
@@ -110,7 +130,9 @@ export const AppProvider = ({ children }) => {
 
     // Favorites
     favorites,
+    favoriteProperties,
     toggleFavorite,
+    addPropertyToFavoritesCache,
 
     // Map
     mapBounds,
