@@ -85,8 +85,68 @@ const AskListingTab = ({ property }) => {
     }
   };
 
-  const handleExampleClick = (exampleQuestion) => {
+  const handleExampleClick = async (exampleQuestion) => {
     setQuestion(exampleQuestion);
+
+    // Automatically submit the question
+    const userMessage = {
+      role: 'user',
+      content: exampleQuestion,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setIsAsking(true);
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
+      const response = await fetch(`${API_URL}/properties/${property.id}/ask`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          question: exampleQuestion
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get answer: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      // Add assistant message to chat
+      const assistantMessage = {
+        role: 'assistant',
+        content: data.answer,
+        nearbyPOIs: data.nearbyPOIs || [],
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
+
+      // Update map with POI markers
+      if (data.nearbyPOIs && data.nearbyPOIs.length > 0) {
+        setPoiMarkers(data.nearbyPOIs);
+      }
+    } catch (error) {
+      console.error('[AskListingTab] Error:', error);
+
+      // Add error message
+      const errorMessage = {
+        role: 'assistant',
+        content: "I'm having trouble answering your question right now. Please try again or rephrase your question.",
+        isError: true,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsAsking(false);
+      setQuestion(''); // Clear input after submission
+    }
   };
 
   return (
