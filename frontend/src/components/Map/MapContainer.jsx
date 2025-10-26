@@ -4,6 +4,7 @@ import PropertyMarker from "./PropertyMarker";
 import RoutePolylines from "./RoutePolylines";
 import AmenityMarkers from "./AmenityMarkers";
 import PropertyCenterMarker from "./PropertyCenterMarker";
+import WorkplaceMarker from "./WorkplaceMarker";
 import { useEffect, useCallback, useRef } from "react";
 import { propertiesAPI } from "../../services/api";
 
@@ -162,8 +163,8 @@ const MapContent = () => {
       {/* Render property home marker when viewing detailed property (details, commute, nearby) */}
       <PropertyCenterMarker />
 
-      {/* TODO: Render workplace marker if set */}
-      {workplace && <div>{/* Workplace marker will go here */}</div>}
+      {/* Render workplace marker when viewing commute tab */}
+      <WorkplaceMarker />
     </>
   );
 };
