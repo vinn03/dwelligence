@@ -13,13 +13,16 @@ const MapContent = () => {
     mapBounds,
     setMapBounds,
     setLoading,
-    loading,
     detailedProperty,
     detailedViewTab,
     filters,
+    useRasterMap,
+    setUseRasterMap,
   } = useAppContext();
   const map = useMap();
   const debounceTimer = useRef(null);
+  const tileLoadTimeout = useRef(null);
+  const tilesLoaded = useRef(false);
 
   // Determine if we should hide property markers
   const shouldHideMarkers =
@@ -88,6 +91,36 @@ const MapContent = () => {
     };
   }, [map, fetchPropertiesInBounds]);
 
+  // Auto-fallback to raster if vector tiles don't load
+  useEffect(() => {
+    if (!map || useRasterMap) return;
+
+    // Set a timeout to switch to raster if tiles don't load in 3 seconds
+    tileLoadTimeout.current = setTimeout(() => {
+      if (!tilesLoaded.current) {
+        console.log('Vector tiles failed to load, switching to raster mode');
+        setUseRasterMap(true);
+      }
+    }, 3000);
+
+    // Listen for tiles loaded event
+    const listener = window.google.maps.event.addListener(map, 'tilesloaded', () => {
+      tilesLoaded.current = true;
+      if (tileLoadTimeout.current) {
+        clearTimeout(tileLoadTimeout.current);
+      }
+    });
+
+    return () => {
+      if (tileLoadTimeout.current) {
+        clearTimeout(tileLoadTimeout.current);
+      }
+      if (listener) {
+        window.google.maps.event.removeListener(listener);
+      }
+    };
+  }, [map, useRasterMap, setUseRasterMap]);
+
   // Handle map bounds changes from search
   useEffect(() => {
     if (map && mapBounds) {
@@ -101,16 +134,6 @@ const MapContent = () => {
 
   return (
     <>
-      {/* Loading overlay */}
-      {loading && (
-        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 pointer-events-none">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 font-medium">Loading properties...</p>
-          </div>
-        </div>
-      )}
-
       {/* Render property markers (hidden when viewing commute/nearby tabs) */}
       {!shouldHideMarkers &&
         visibleProperties.map((property) => (
