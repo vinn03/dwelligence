@@ -49,7 +49,6 @@ export const AppProvider = ({ children }) => {
 
   // Loading states
   const [loading, setLoading] = useState(false);
-  const [calculatingCommutes, setCalculatingCommutes] = useState(false);
 
   // Active tab state
   const [activeTab, setActiveTab] = useState('top'); // 'top' | 'favorites' | 'ai-results'
@@ -141,8 +140,6 @@ export const AppProvider = ({ children }) => {
     // Loading
     loading,
     setLoading,
-    calculatingCommutes,
-    setCalculatingCommutes,
 
     // Active tab
     activeTab,

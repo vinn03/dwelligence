@@ -4,7 +4,6 @@ import PropertyMarker from "./PropertyMarker";
 import RoutePolylines from "./RoutePolylines";
 import { useEffect, useCallback, useRef } from "react";
 import { propertiesAPI } from "../../services/api";
-import { useCommuteCalculation } from "../../hooks/useCommuteCalculation";
 
 const MapContent = () => {
   const {
@@ -26,9 +25,6 @@ const MapContent = () => {
   const shouldHideMarkers =
     detailedProperty &&
     (detailedViewTab === "commute" || detailedViewTab === "nearby");
-
-  // Automatically calculate commutes when properties, workplace, or transport mode changes
-  useCommuteCalculation();
 
   // Fetch properties within viewport bounds
   const fetchPropertiesInBounds = useCallback(
