@@ -16,6 +16,7 @@ const MapContent = () => {
     setLoading,
     detailedProperty,
     detailedViewTab,
+    filters,
   } = useAppContext();
   const map = useMap();
   const debounceTimer = useRef(null);
@@ -33,7 +34,7 @@ const MapContent = () => {
     async (bounds) => {
       try {
         setLoading(true);
-        const response = await propertiesAPI.getInBounds(bounds);
+        const response = await propertiesAPI.getInBounds(bounds, filters);
         setVisibleProperties(response.data);
       } catch (error) {
         console.error("Error fetching properties:", error);
@@ -41,7 +42,7 @@ const MapContent = () => {
         setLoading(false);
       }
     },
-    [setVisibleProperties, setLoading]
+    [setVisibleProperties, setLoading, filters]
   );
 
   // Handle map bounds changes (with debouncing)

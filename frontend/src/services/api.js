@@ -18,8 +18,16 @@ export const propertiesAPI = {
 
   // Get properties within map bounds with filters (using mock data for MVP)
   getInBounds: (bounds, filters = {}) => {
+    // Only include non-null filter values
+    const filterParams = {};
+    if (filters.minPrice) filterParams.minPrice = filters.minPrice;
+    if (filters.maxPrice) filterParams.maxPrice = filters.maxPrice;
+    if (filters.bedrooms) filterParams.bedrooms = filters.bedrooms;
+    if (filters.bathrooms) filterParams.bathrooms = filters.bathrooms;
+    if (filters.propertyType) filterParams.propertyType = filters.propertyType;
+
     return api.get('/mock-properties/map-bounds', {
-      params: { ...bounds, ...filters }
+      params: { ...bounds, ...filterParams }
     });
   },
 

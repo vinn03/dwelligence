@@ -145,7 +145,7 @@ router.get('/', (req, res) => {
 
 // GET /api/mock-properties/map-bounds - Get properties within viewport bounds
 router.get('/map-bounds', (req, res) => {
-  const { north, south, east, west } = req.query;
+  const { north, south, east, west, minPrice, maxPrice, bedrooms, bathrooms, propertyType } = req.query;
 
   if (!north || !south || !east || !west) {
     return res.status(400).json({
@@ -161,12 +161,31 @@ router.get('/map-bounds', (req, res) => {
   };
 
   // Filter properties within bounds
-  const filtered = mockProperties.filter(property => {
+  let filtered = mockProperties.filter(property => {
     return property.lat >= bounds.south &&
            property.lat <= bounds.north &&
            property.lng >= bounds.west &&
            property.lng <= bounds.east;
   });
+
+  // Apply additional filters
+  if (minPrice) {
+    filtered = filtered.filter(p => p.price >= parseFloat(minPrice));
+  }
+  if (maxPrice) {
+    filtered = filtered.filter(p => p.price <= parseFloat(maxPrice));
+  }
+  if (bedrooms) {
+    const bedroomsNum = parseInt(bedrooms);
+    filtered = filtered.filter(p => p.bedrooms >= bedroomsNum);
+  }
+  if (bathrooms) {
+    const bathroomsNum = parseInt(bathrooms);
+    filtered = filtered.filter(p => p.bathrooms >= bathroomsNum);
+  }
+  if (propertyType) {
+    filtered = filtered.filter(p => p.property_type === propertyType);
+  }
 
   res.json(filtered);
 });
