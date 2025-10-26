@@ -1,9 +1,9 @@
-import { useAppContext } from '../../context/AppContext';
-import { APIProvider } from '@vis.gl/react-google-maps';
-import SearchBar from './SearchBar';
-import WorkplaceInput from './WorkplaceInput';
-import TransportModeToggle from './TransportModeToggle';
-import Filters from './Filters';
+import { useAppContext } from "../../context/AppContext";
+import { APIProvider } from "@vis.gl/react-google-maps";
+import SearchBar from "./SearchBar";
+import WorkplaceInput from "./WorkplaceInput";
+import TransportModeToggle from "./TransportModeToggle";
+import Filters from "./Filters";
 
 const Header = () => {
   const { workplace, useRasterMap, setUseRasterMap } = useAppContext();
@@ -33,12 +33,16 @@ const Header = () => {
             onClick={() => setUseRasterMap(!useRasterMap)}
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
               useRasterMap
-                ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? "bg-orange-100 text-orange-700 hover:bg-orange-200"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
-            title={useRasterMap ? 'Using Raster (Low Bandwidth)' : 'Using Vector (High Quality)'}
+            title={
+              useRasterMap
+                ? "Using Raster (Low Bandwidth)"
+                : "Using Vector (High Quality)"
+            }
           >
-            {useRasterMap ? '📡 Raster' : '🗺️ Vector'}
+            {useRasterMap ? "🖼️ Raster" : "🗺️ Vector"}
           </button>
 
           {/* Filters Button */}

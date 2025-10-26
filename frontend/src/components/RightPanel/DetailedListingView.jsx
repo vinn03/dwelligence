@@ -20,6 +20,7 @@ const DetailedListingView = ({ property, onBack }) => {
   const [routes, setRoutes] = useState([]);
   const [loadingRoutes, setLoadingRoutes] = useState(false);
   const [loadingAmenities, setLoadingAmenities] = useState(false);
+  const [expandedRoutes, setExpandedRoutes] = useState(new Set());
 
   const isFavorite = favorites.includes(property.id);
 
@@ -187,6 +188,18 @@ const DetailedListingView = ({ property, onBack }) => {
     return null;
   };
 
+  const toggleRouteExpanded = (routeIndex) => {
+    setExpandedRoutes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(routeIndex)) {
+        newSet.delete(routeIndex);
+      } else {
+        newSet.add(routeIndex);
+      }
+      return newSet;
+    });
+  };
+
   const renderCommuteTab = () => {
     if (!workplace) {
       return (
@@ -221,11 +234,11 @@ const DetailedListingView = ({ property, onBack }) => {
       <div className="space-y-4">
         {routes.map((route, index) => {
           const isSelected = selectedRouteIndex === route.routeIndex;
+          const isExpanded = expandedRoutes.has(route.routeIndex);
           return (
             <div
               key={route.routeIndex}
-              onClick={() => handleRouteClick(route.routeIndex)}
-              className={`border-2 rounded-lg cursor-pointer transition-all overflow-hidden ${
+              className={`border-2 rounded-lg transition-all overflow-hidden ${
                 isSelected
                   ? "border-primary-600 shadow-md"
                   : "border-gray-200 hover:border-primary-400"
@@ -233,7 +246,8 @@ const DetailedListingView = ({ property, onBack }) => {
             >
               {/* Route Header */}
               <div
-                className={`p-3 border-b ${
+                onClick={() => handleRouteClick(route.routeIndex)}
+                className={`p-3 border-b cursor-pointer ${
                   isSelected
                     ? "bg-primary-50 border-primary-200"
                     : "bg-gray-50 border-gray-200"
@@ -254,8 +268,28 @@ const DetailedListingView = ({ property, onBack }) => {
                 )}
               </div>
 
-              {/* Route Steps */}
-              <div className="p-3 space-y-3">
+              {/* Expand/Collapse Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleRouteExpanded(route.routeIndex);
+                }}
+                className="w-full p-2 bg-gray-50 hover:bg-gray-100 border-b border-gray-200 flex items-center justify-center gap-2 text-sm text-gray-600"
+              >
+                <span>{isExpanded ? 'Hide' : 'Show'} directions</span>
+                <svg
+                  className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Route Steps - Collapsible */}
+              {isExpanded && (
+                <div className="p-3 space-y-3">
                 {route.steps.map((step, stepIndex) => (
                   <div key={stepIndex} className="flex gap-3">
                     {/* Icon */}
@@ -346,7 +380,8 @@ const DetailedListingView = ({ property, onBack }) => {
                     </div>
                   </div>
                 ))}
-              </div>
+                </div>
+              )}
             </div>
           );
         })}
