@@ -2,6 +2,16 @@ import { useState, useRef, useEffect } from "react";
 import { useAppContext } from "../../context/AppContext";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 
+// Helper function to extract the first part of an address
+const getShortAddress = (fullAddress) => {
+  if (!fullAddress) return "";
+
+  // Split by comma and take the first part
+  const firstPart = fullAddress.split(',')[0].trim();
+
+  return firstPart;
+};
+
 const WorkplaceInput = () => {
   const { workplace, setWorkplace } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
@@ -97,7 +107,7 @@ const WorkplaceInput = () => {
         </svg>
         <span className="text-sm font-medium">
           {workplace
-            ? workplace.formattedAddress || "Workplace Set"
+            ? getShortAddress(workplace.formattedAddress) || "Workplace Set"
             : "Set Workplace"}
         </span>
       </button>
