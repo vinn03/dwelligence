@@ -51,7 +51,13 @@ const MapContent = () => {
         setLoading(false);
       }
     },
-    [setVisibleProperties, setLoading, filters, transportMode, selectedAmenities]
+    [
+      setVisibleProperties,
+      setLoading,
+      filters,
+      transportMode,
+      selectedAmenities,
+    ]
   );
 
   // Handle map bounds changes (with debouncing)
@@ -107,18 +113,22 @@ const MapContent = () => {
     // Set a timeout to switch to raster if tiles don't load in 3 seconds
     tileLoadTimeout.current = setTimeout(() => {
       if (!tilesLoaded.current) {
-        console.log('Vector tiles failed to load, switching to raster mode');
+        console.log("Vector tiles failed to load, switching to raster mode");
         setUseRasterMap(true);
       }
     }, 3000);
 
     // Listen for tiles loaded event
-    const listener = window.google.maps.event.addListener(map, 'tilesloaded', () => {
-      tilesLoaded.current = true;
-      if (tileLoadTimeout.current) {
-        clearTimeout(tileLoadTimeout.current);
+    const listener = window.google.maps.event.addListener(
+      map,
+      "tilesloaded",
+      () => {
+        tilesLoaded.current = true;
+        if (tileLoadTimeout.current) {
+          clearTimeout(tileLoadTimeout.current);
+        }
       }
-    });
+    );
 
     return () => {
       if (tileLoadTimeout.current) {
