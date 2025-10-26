@@ -65,6 +65,9 @@ export const AppProvider = ({ children }) => {
   const [selectedRoutes, setSelectedRoutes] = useState([]); // Routes to render on map
   const [selectedRouteIndex, setSelectedRouteIndex] = useState(0); // Which route is currently selected/highlighted
 
+  // Amenity visualization state (for Nearby tab)
+  const [amenityVisualization, setAmenityVisualization] = useState(null); // { hexBoundary, amenities, h3Index }
+
   // Persist workplace to localStorage
   useEffect(() => {
     if (workplace) {
@@ -165,7 +168,11 @@ export const AppProvider = ({ children }) => {
     selectedRoutes,
     setSelectedRoutes,
     selectedRouteIndex,
-    setSelectedRouteIndex
+    setSelectedRouteIndex,
+
+    // Amenity visualization
+    amenityVisualization,
+    setAmenityVisualization
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "../../context/AppContext";
-import { commuteAPI } from "../../services/api";
+import { commuteAPI, propertiesAPI } from "../../services/api";
 
 const DetailedListingView = ({ property, onBack }) => {
   const {
@@ -14,9 +14,12 @@ const DetailedListingView = ({ property, onBack }) => {
     setSelectedRouteIndex,
     favorites,
     toggleFavorite,
+    amenityVisualization,
+    setAmenityVisualization,
   } = useAppContext();
   const [routes, setRoutes] = useState([]);
   const [loadingRoutes, setLoadingRoutes] = useState(false);
+  const [loadingAmenities, setLoadingAmenities] = useState(false);
 
   const isFavorite = favorites.includes(property.id);
 
@@ -47,6 +50,31 @@ const DetailedListingView = ({ property, onBack }) => {
       console.error("Error fetching routes:", error);
     } finally {
       setLoadingRoutes(false);
+    }
+  };
+
+  // Fetch amenities when Nearby tab is active
+  useEffect(() => {
+    if (detailedViewTab === "nearby" && property) {
+      fetchAmenities();
+    } else {
+      // Clear amenity visualization when switching away from nearby tab
+      setAmenityVisualization(null);
+    }
+  }, [detailedViewTab, property, transportMode]);
+
+  const fetchAmenities = async () => {
+    try {
+      setLoadingAmenities(true);
+      const response = await propertiesAPI.getAmenitiesForProperty(
+        property.id,
+        transportMode
+      );
+      setAmenityVisualization(response.data);
+    } catch (error) {
+      console.error("Error fetching amenities:", error);
+    } finally {
+      setLoadingAmenities(false);
     }
   };
 
@@ -326,13 +354,132 @@ const DetailedListingView = ({ property, onBack }) => {
     );
   };
 
-  const renderNearbyTab = () => (
-    <div className="flex items-center justify-center h-40">
-      <p className="text-gray-500 text-sm">
-        Nearby places feature coming soon (Iteration 2)
-      </p>
-    </div>
-  );
+  const renderNearbyTab = () => {
+    // Amenity types with emojis (matching AmenitiesToggle component)
+    const amenityTypes = [
+      { id: 'park', label: 'Parks', emoji: '🌳' },
+      { id: 'grocery', label: 'Groceries', emoji: '🛒' },
+      { id: 'cafe', label: 'Cafes', emoji: '☕' },
+      { id: 'restaurant', label: 'Restaurants', emoji: '🍽️' },
+      { id: 'transit_station', label: 'Transit', emoji: '🚉' },
+      { id: 'gym', label: 'Gyms', emoji: '💪' },
+      { id: 'pharmacy', label: 'Pharmacies', emoji: '💊' },
+      { id: 'community_center', label: 'Community', emoji: '🏢' },
+    ];
+
+    // Show loading state
+    if (loadingAmenities) {
+      return (
+        <div className="flex items-center justify-center h-40">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
+            <p className="text-sm text-gray-600">Loading amenities...</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Count amenities by type
+    const amenityCounts = {};
+    if (amenityVisualization && amenityVisualization.amenities) {
+      amenityVisualization.amenities.forEach(amenity => {
+        amenityCounts[amenity.type] = (amenityCounts[amenity.type] || 0) + 1;
+      });
+    }
+
+    // Check if any amenity data is available
+    const hasAmenityData = Object.values(amenityCounts).some(count => count > 0);
+
+    if (!hasAmenityData && !loadingAmenities) {
+      return (
+        <div className="flex items-center justify-center h-40">
+          <p className="text-gray-500 text-sm">
+            No nearby amenities found within range
+          </p>
+        </div>
+      );
+    }
+
+    // Get transport mode info for display
+    const getTransportModeInfo = () => {
+      const modes = {
+        'walking': { label: 'Walking Distance', range: '~1.2km', emoji: '🚶' },
+        'bicycling': { label: 'Biking Distance', range: '~3.2km', emoji: '🚴' },
+        'driving': { label: 'Driving Distance', range: '~8.5km', emoji: '🚗' },
+        'transit': { label: 'Transit Distance', range: '~1.2km', emoji: '🚇' }
+      };
+      return modes[transportMode] || modes['walking'];
+    };
+
+    const modeInfo = getTransportModeInfo();
+
+    const totalAmenities = Object.values(amenityCounts).reduce((sum, count) => sum + count, 0);
+
+    return (
+      <div className="space-y-4">
+        {/* Info Banner */}
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-start gap-2">
+            <span className="text-lg">📍</span>
+            <div>
+              <p className="text-sm font-semibold text-blue-900">
+                {totalAmenities} amenities visualized on map
+              </p>
+              <p className="text-xs text-blue-700 mt-0.5">
+                Markers show all amenities within the coverage area for this property.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Header with transport mode info */}
+        <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <span className="text-2xl">{modeInfo.emoji}</span>
+          <div>
+            <p className="text-sm font-semibold text-gray-900">{modeInfo.label}</p>
+            <p className="text-xs text-gray-600">Approximately {modeInfo.range}</p>
+          </div>
+        </div>
+
+        {/* Amenity Grid */}
+        <div className="grid grid-cols-2 gap-3">
+          {amenityTypes.map((amenity) => {
+            const count = amenityCounts[amenity.id] || 0;
+
+            return (
+              <div
+                key={amenity.id}
+                className={`p-3 rounded-lg border transition-colors ${
+                  count > 0
+                    ? 'bg-primary-50 border-primary-200'
+                    : 'bg-gray-50 border-gray-200'
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xl">{amenity.emoji}</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {amenity.label}
+                  </span>
+                </div>
+                <p className={`text-2xl font-bold ${
+                  count > 0 ? 'text-primary-600' : 'text-gray-400'
+                }`}>
+                  {count}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Info Footer */}
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-xs text-blue-800">
+            Counts are based on your current transport mode. Change the transport mode in the header to see different ranges.
+          </p>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="h-full flex flex-col">

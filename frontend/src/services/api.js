@@ -44,6 +44,13 @@ export const propertiesAPI = {
     return api.get(`/properties/${id}`);
   },
 
+  // Get amenities for a property's hex
+  getAmenitiesForProperty: (id, transportMode = 'walking') => {
+    return api.get(`/properties/${id}/amenities`, {
+      params: { transportMode }
+    });
+  },
+
   // Create property (for testing)
   create: (propertyData) => {
     return api.post('/properties', propertyData);

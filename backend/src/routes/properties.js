@@ -88,6 +88,27 @@ router.get('/map-bounds', async (req, res, next) => {
   }
 });
 
+// GET /api/properties/:id/amenities - Get amenities for a property's hex
+router.get('/:id/amenities', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { transportMode } = req.query;
+
+    const result = await db.getAmenitiesForProperty(
+      parseInt(id),
+      transportMode || 'walking'
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: 'Property not found' });
+    }
+
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // GET /api/properties/:id - Get single property details
 router.get('/:id', async (req, res, next) => {
   try {

@@ -2,6 +2,8 @@ import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
 import { useAppContext } from "../../context/AppContext";
 import PropertyMarker from "./PropertyMarker";
 import RoutePolylines from "./RoutePolylines";
+import AmenityMarkers from "./AmenityMarkers";
+import PropertyCenterMarker from "./PropertyCenterMarker";
 import { useEffect, useCallback, useRef } from "react";
 import { propertiesAPI } from "../../services/api";
 
@@ -149,6 +151,10 @@ const MapContent = () => {
 
       {/* Render route polylines when viewing commute tab */}
       <RoutePolylines />
+
+      {/* Render amenity markers and property marker when viewing nearby tab */}
+      <AmenityMarkers />
+      <PropertyCenterMarker />
 
       {/* TODO: Render workplace marker if set */}
       {workplace && <div>{/* Workplace marker will go here */}</div>}

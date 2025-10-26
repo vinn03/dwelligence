@@ -1,5 +1,6 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
+import { cellToBoundary } from 'h3-js';
 
 dotenv.config();
 
@@ -296,6 +297,80 @@ export const db = {
     ]);
 
     return result.rows[0] ? transformProperty(result.rows[0]) : null;
+  },
+
+  /**
+   * Get amenities for a property's H3 hex
+   * Returns: { property, hexBoundary, amenities }
+   */
+  async getAmenitiesForProperty(propertyId, transportMode = 'walking') {
+    // Determine H3 resolution based on transport mode
+    const h3Resolution = {
+      'walking': 'h3_index_r7',
+      'bicycling': 'h3_index_r6',
+      'driving': 'h3_index_r5',
+      'transit': 'h3_index_r7'
+    }[transportMode] || 'h3_index_r7';
+
+    // Get property with its H3 index
+    const propertyQuery = `
+      SELECT
+        id, name, address, lat, lng, price, bedrooms, bathrooms, sq_ft,
+        property_type, sale_type, description, image_url,
+        h3_index_r7, h3_index_r6, h3_index_r5
+      FROM properties
+      WHERE id = $1
+    `;
+
+    const propertyResult = await pool.query(propertyQuery, [propertyId]);
+
+    if (propertyResult.rows.length === 0) {
+      return null;
+    }
+
+    const property = transformProperty(propertyResult.rows[0]);
+    const h3Index = propertyResult.rows[0][h3Resolution];
+
+    if (!h3Index) {
+      return {
+        property,
+        hexBoundary: null,
+        amenities: []
+      };
+    }
+
+    // Get hex boundary using h3-js
+    const boundary = cellToBoundary(h3Index, true); // true for [lat, lng] format
+    const hexBoundary = boundary.map(([lat, lng]) => ({ lat, lng }));
+
+    // Get all amenities in this hex
+    const amenitiesQuery = `
+      SELECT
+        id, name, type, address, lat, lng, osm_id
+      FROM amenities
+      WHERE ${h3Resolution} = $1
+      ORDER BY type, name
+    `;
+
+    const amenitiesResult = await pool.query(amenitiesQuery, [h3Index]);
+
+    const amenities = amenitiesResult.rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      type: row.type,
+      address: row.address,
+      lat: parseFloat(row.lat),
+      lng: parseFloat(row.lng),
+      osmId: row.osm_id
+    }));
+
+    return {
+      property,
+      hexBoundary,
+      amenities,
+      h3Index,
+      transportMode
+    };
   }
 };
 
