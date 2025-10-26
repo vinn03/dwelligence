@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 import { useAppContext } from "../../context/AppContext";
-import Tooltip from "./Tooltip";
 
-const PropertyCenterMarker = () => {
-  const { detailedProperty, detailedViewTab } = useAppContext();
+const WorkplaceMarker = () => {
+  const { workplace, detailedViewTab, detailedProperty } = useAppContext();
   const map = useMap();
   const [marker, setMarker] = useState(null);
-  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     // Clear existing marker
@@ -16,26 +14,26 @@ const PropertyCenterMarker = () => {
       setMarker(null);
     }
 
-    // Only render when viewing detailed property in details, commute, or nearby tabs
+    // Only render when on commute tab with workplace set and viewing a detailed property
     if (
       !map ||
       !window.google ||
+      !workplace ||
       !detailedProperty ||
-      (detailedViewTab !== 'details' && detailedViewTab !== 'commute' && detailedViewTab !== 'nearby')
+      detailedViewTab !== 'commute'
     ) {
-      setShowTooltip(false);
       return;
     }
 
-    // Create a custom pin-shaped marker for the property
+    // Create a custom pin-shaped marker for the workplace
     const markerDiv = document.createElement('div');
     markerDiv.style.cssText = `
       width: 50px;
       height: 60px;
-      cursor: pointer;
-      transition: transform 0.2s;
+      cursor: default;
       z-index: 1000;
       position: absolute;
+      pointer-events: none;
     `;
 
     // Create pin shape with SVG
@@ -43,19 +41,16 @@ const PropertyCenterMarker = () => {
       <svg width="50" height="60" viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg">
         <!-- Pin drop shape -->
         <path d="M25 0 C11.2 0 0 11.2 0 25 C0 38.8 25 60 25 60 C25 60 50 38.8 50 25 C50 11.2 38.8 0 25 0 Z"
-              fill="#dc2626" stroke="#ffffff" stroke-width="3"/>
+              fill="#2563eb" stroke="#ffffff" stroke-width="3"/>
         <!-- Inner white circle for emoji -->
         <circle cx="25" cy="23" r="14" fill="#ffffff"/>
-        <!-- House emoji positioned in center -->
-        <text x="25" y="30" font-size="18" text-anchor="middle">🏠</text>
+        <!-- Briefcase emoji positioned in center -->
+        <text x="25" y="30" font-size="18" text-anchor="middle">💼</text>
       </svg>
     `;
 
-    markerDiv.onmouseenter = () => markerDiv.style.transform = 'scale(1.1)';
-    markerDiv.onmouseleave = () => markerDiv.style.transform = 'scale(1)';
-
     // Create marker using OverlayView for custom HTML
-    class PropertyMarker extends window.google.maps.OverlayView {
+    class WorkplaceMarkerOverlay extends window.google.maps.OverlayView {
       constructor(position, content) {
         super();
         this.position = position;
@@ -88,38 +83,23 @@ const PropertyCenterMarker = () => {
       }
     }
 
-    const propertyMarker = new PropertyMarker(
-      { lat: detailedProperty.lat, lng: detailedProperty.lng },
+    const workplaceMarker = new WorkplaceMarkerOverlay(
+      { lat: workplace.lat, lng: workplace.lng },
       markerDiv
     );
-    propertyMarker.setMap(map);
+    workplaceMarker.setMap(map);
 
-    // Add click listener to the div element
-    markerDiv.addEventListener('click', () => {
-      setShowTooltip(true);
-    });
-
-    setMarker(propertyMarker);
+    setMarker(workplaceMarker);
 
     // Cleanup
     return () => {
-      if (propertyMarker) {
-        propertyMarker.setMap(null);
+      if (workplaceMarker) {
+        workplaceMarker.setMap(null);
       }
-      setShowTooltip(false);
     };
-  }, [map, detailedProperty, detailedViewTab]);
+  }, [map, workplace, detailedViewTab, detailedProperty]);
 
-  return (
-    <>
-      {showTooltip && detailedProperty && (
-        <Tooltip
-          property={detailedProperty}
-          onClose={() => setShowTooltip(false)}
-        />
-      )}
-    </>
-  );
+  return null;
 };
 
-export default PropertyCenterMarker;
+export default WorkplaceMarker;

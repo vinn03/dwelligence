@@ -50,14 +50,14 @@ const RoutePolylines = () => {
           );
 
           // Check if this is a walking step
-          const isWalking = step.travelMode === 'WALKING';
+          const isWalking = step.travelMode === "WALKING";
 
           // Create polyline with appropriate style
           const polylineConfig = {
             path: stepPath,
             geodesic: true,
             strokeColor: color,
-            strokeOpacity: isWalking ? 0 : (isSelected ? 1.0 : 0.8), // No stroke for walking, only dots
+            strokeOpacity: isWalking ? 0 : isSelected ? 1.0 : 0.8, // No stroke for walking, only dots
             strokeWeight: isSelected ? 7 : 4,
             zIndex: isSelected ? 1000 : 100,
             map: map,
@@ -116,22 +116,37 @@ const RoutePolylines = () => {
         const nextStep = selectedRoute.steps[i + 1];
 
         let transferLocation = null;
-        let transferLabel = '';
+        let transferLabel = "";
 
         // Walking to transit (boarding)
-        if (currentStep.travelMode === 'WALKING' && nextStep.travelMode === 'TRANSIT') {
+        if (
+          currentStep.travelMode === "WALKING" &&
+          nextStep.travelMode === "TRANSIT"
+        ) {
           transferLocation = nextStep.transit.departureStop.location;
-          transferLabel = `Board ${nextStep.transit.line.shortName || nextStep.transit.line.name}`;
+          transferLabel = `Board ${
+            nextStep.transit.line.shortName || nextStep.transit.line.name
+          }`;
         }
         // Transit to walking (alighting)
-        else if (currentStep.travelMode === 'TRANSIT' && nextStep.travelMode === 'WALKING') {
+        else if (
+          currentStep.travelMode === "TRANSIT" &&
+          nextStep.travelMode === "WALKING"
+        ) {
           transferLocation = currentStep.transit.arrivalStop.location;
-          transferLabel = `Alight ${currentStep.transit.line.shortName || currentStep.transit.line.name}`;
+          transferLabel = `Alight ${
+            currentStep.transit.line.shortName || currentStep.transit.line.name
+          }`;
         }
         // Transit to transit (transfer)
-        else if (currentStep.travelMode === 'TRANSIT' && nextStep.travelMode === 'TRANSIT') {
+        else if (
+          currentStep.travelMode === "TRANSIT" &&
+          nextStep.travelMode === "TRANSIT"
+        ) {
           transferLocation = currentStep.transit.arrivalStop.location;
-          transferLabel = `Transfer: ${currentStep.transit.line.shortName || currentStep.transit.line.name} → ${nextStep.transit.line.shortName || nextStep.transit.line.name}`;
+          transferLabel = `Transfer: ${
+            currentStep.transit.line.shortName || currentStep.transit.line.name
+          } → ${nextStep.transit.line.shortName || nextStep.transit.line.name}`;
         }
 
         if (transferLocation) {
@@ -142,13 +157,13 @@ const RoutePolylines = () => {
             icon: {
               path: window.google.maps.SymbolPath.CIRCLE,
               scale: 4,
-              fillColor: '#FFFFFF',
+              fillColor: "#FFFFFF",
               fillOpacity: 1,
-              strokeColor: '#000000',
+              strokeColor: "#000000",
               strokeWeight: 1.5,
             },
             title: transferLabel,
-            zIndex: 2000
+            zIndex: 2000,
           });
 
           newMarkers.push(marker);
@@ -172,6 +187,12 @@ const RoutePolylines = () => {
 
       // Fit the map to show all routes
       map.fitBounds(bounds, { padding: 80 });
+
+      // Zoom out one level to show more context
+      const currentZoom = map.getZoom();
+      if (currentZoom) {
+        map.setZoom(currentZoom - 1);
+      }
     }
 
     // Cleanup function

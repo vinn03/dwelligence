@@ -4,6 +4,7 @@ import PropertyMarker from "./PropertyMarker";
 import RoutePolylines from "./RoutePolylines";
 import AmenityMarkers from "./AmenityMarkers";
 import PropertyCenterMarker from "./PropertyCenterMarker";
+import WorkplaceMarker from "./WorkplaceMarker";
 import { useEffect, useCallback, useRef } from "react";
 import { propertiesAPI } from "../../services/api";
 
@@ -25,11 +26,6 @@ const MapContent = () => {
   const debounceTimer = useRef(null);
   const tileLoadTimeout = useRef(null);
   const tilesLoaded = useRef(false);
-
-  // Determine if we should hide property markers
-  const shouldHideMarkers =
-    detailedProperty &&
-    (detailedViewTab === "commute" || detailedViewTab === "nearby");
 
   // Fetch properties within viewport bounds
   const fetchPropertiesInBounds = useCallback(
@@ -142,10 +138,18 @@ const MapContent = () => {
     }
   }, [map, mapBounds]);
 
+  // Center map on detailed property when opened
+  useEffect(() => {
+    if (map && detailedProperty) {
+      map.panTo({ lat: detailedProperty.lat, lng: detailedProperty.lng });
+      map.setZoom(15); // Zoom in closer to see the property
+    }
+  }, [map, detailedProperty]);
+
   return (
     <>
-      {/* Render property markers (hidden when viewing commute/nearby tabs) */}
-      {!shouldHideMarkers &&
+      {/* Render property markers (hidden when viewing detailed property) */}
+      {!detailedProperty &&
         visibleProperties.map((property) => (
           <PropertyMarker key={property.id} property={property} />
         ))}
@@ -153,12 +157,14 @@ const MapContent = () => {
       {/* Render route polylines when viewing commute tab */}
       <RoutePolylines />
 
-      {/* Render amenity markers and property marker when viewing nearby tab */}
+      {/* Render amenity markers when viewing nearby tab */}
       <AmenityMarkers />
+
+      {/* Render property home marker when viewing detailed property (details, commute, nearby) */}
       <PropertyCenterMarker />
 
-      {/* TODO: Render workplace marker if set */}
-      {workplace && <div>{/* Workplace marker will go here */}</div>}
+      {/* Render workplace marker when viewing commute tab */}
+      <WorkplaceMarker />
     </>
   );
 };

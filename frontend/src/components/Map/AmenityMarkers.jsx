@@ -153,6 +153,37 @@ const AmenityMarkers = () => {
 
     setMarkers(newMarkers);
 
+    // Fit bounds to show all amenities and the property
+    if (amenityVisualization.amenities.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+
+      // Add property location to bounds
+      if (amenityVisualization.property) {
+        bounds.extend(
+          new window.google.maps.LatLng(
+            amenityVisualization.property.lat,
+            amenityVisualization.property.lng
+          )
+        );
+      }
+
+      // Add all amenity locations to bounds
+      amenityVisualization.amenities.forEach((amenity) => {
+        bounds.extend(
+          new window.google.maps.LatLng(amenity.lat, amenity.lng)
+        );
+      });
+
+      // Fit the map to show all amenities with padding
+      map.fitBounds(bounds, { padding: 80 });
+
+      // Zoom out one level to show more context
+      const currentZoom = map.getZoom();
+      if (currentZoom) {
+        map.setZoom(currentZoom - 1);
+      }
+    }
+
     // Cleanup
     return () => {
       newMarkers.forEach(marker => {
