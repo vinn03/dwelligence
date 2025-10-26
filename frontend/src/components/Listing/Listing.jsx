@@ -1,6 +1,6 @@
 import { useAppContext } from '../../context/AppContext';
 
-const Listing = ({ property, compact = false, showClose = false, onClose = null }) => {
+const Listing = ({ property, compact = false, showClose = false, onClose = null, onClick = null }) => {
   const { favorites, toggleFavorite, transportMode } = useAppContext();
 
   const isFavorite = favorites.includes(property.id);
@@ -8,11 +8,18 @@ const Listing = ({ property, compact = false, showClose = false, onClose = null 
   // Get commute data if available
   const commute = property.commute;
 
+  const handleClick = () => {
+    if (onClick) {
+      onClick(property);
+    }
+  };
+
   return (
     <div
+      onClick={handleClick}
       className={`bg-white rounded-lg overflow-hidden ${
         compact ? 'shadow-sm' : 'shadow-md hover:shadow-lg transition-shadow'
-      }`}
+      } ${onClick ? 'cursor-pointer' : ''}`}
     >
       {/* Property Image */}
       <div className="relative">
