@@ -6,7 +6,7 @@ import TransportModeToggle from './TransportModeToggle';
 import Filters from './Filters';
 
 const Header = () => {
-  const { workplace } = useAppContext();
+  const { workplace, useRasterMap, setUseRasterMap } = useAppContext();
 
   return (
     <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
@@ -27,6 +27,19 @@ const Header = () => {
 
           {/* Transport Mode Toggle */}
           <TransportModeToggle />
+
+          {/* Map Rendering Toggle */}
+          <button
+            onClick={() => setUseRasterMap(!useRasterMap)}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              useRasterMap
+                ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+            title={useRasterMap ? 'Using Raster (Low Bandwidth)' : 'Using Vector (High Quality)'}
+          >
+            {useRasterMap ? '📡 Raster' : '🗺️ Vector'}
+          </button>
 
           {/* Filters Button */}
           <Filters />

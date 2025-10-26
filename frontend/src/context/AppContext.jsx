@@ -47,6 +47,9 @@ export const AppProvider = ({ children }) => {
   // Map bounds state
   const [mapBounds, setMapBounds] = useState(null);
 
+  // Map rendering mode (raster for low bandwidth, vector for better quality)
+  const [useRasterMap, setUseRasterMap] = useState(false);
+
   // Loading states
   const [loading, setLoading] = useState(false);
 
@@ -136,6 +139,8 @@ export const AppProvider = ({ children }) => {
     // Map
     mapBounds,
     setMapBounds,
+    useRasterMap,
+    setUseRasterMap,
 
     // Loading
     loading,

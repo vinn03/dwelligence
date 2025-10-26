@@ -127,6 +127,7 @@ const MapContent = () => {
 };
 
 const MapContainer = () => {
+  const { useRasterMap } = useAppContext();
   const defaultCenter = { lat: 37.7749, lng: -122.4194 }; // San Francisco
 
   return (
@@ -140,7 +141,8 @@ const MapContainer = () => {
         gestureHandling="greedy"
         disableDefaultUI={false}
         clickableIcons={false}
-        mapId="e7aefce9a26a6f40196ae1b3"
+        renderingType={useRasterMap ? "RASTER" : "VECTOR"}
+        mapId={useRasterMap ? undefined : "e7aefce9a26a6f40196ae1b3"}
         className="w-full h-full"
       >
         <MapContent />
