@@ -119,11 +119,11 @@ const DetailedListingView = ({ property, onBack }) => {
       <div className="space-y-3">
         <div>
           <p className="text-sm text-gray-600">Property Type</p>
-          <p className="font-medium capitalize">{property.property_type}</p>
+          <p className="font-medium capitalize">{property.propertyType}</p>
         </div>
         <div>
           <p className="text-sm text-gray-600">Listing Type</p>
-          <p className="font-medium capitalize">{property.sale_type}</p>
+          <p className="font-medium capitalize">{property.saleType}</p>
         </div>
         <div>
           <p className="text-sm text-gray-600">Address</p>
@@ -357,14 +357,14 @@ const DetailedListingView = ({ property, onBack }) => {
   const renderNearbyTab = () => {
     // Amenity types with emojis
     const amenityTypes = [
-      { id: 'park', label: 'Parks', emoji: '🌳' },
-      { id: 'grocery', label: 'Groceries', emoji: '🛒' },
-      { id: 'cafe', label: 'Cafes', emoji: '☕' },
-      { id: 'restaurant', label: 'Restaurants', emoji: '🍽️' },
-      { id: 'transit_station', label: 'Transit', emoji: '🚈' },
-      { id: 'gym', label: 'Gyms', emoji: '💪' },
-      { id: 'pharmacy', label: 'Pharmacies', emoji: '💊' },
-      { id: 'community_center', label: 'Community', emoji: '🏢' },
+      { id: "park", label: "Parks", emoji: "🌳" },
+      { id: "grocery", label: "Groceries", emoji: "🛒" },
+      { id: "cafe", label: "Cafes", emoji: "☕" },
+      { id: "restaurant", label: "Restaurants", emoji: "🍽️" },
+      { id: "transit_station", label: "Transit", emoji: "🚈" },
+      { id: "gym", label: "Gyms", emoji: "💪" },
+      { id: "pharmacy", label: "Pharmacies", emoji: "💊" },
+      { id: "community_center", label: "Community", emoji: "🏢" },
     ];
 
     // Show loading state
@@ -383,7 +383,9 @@ const DetailedListingView = ({ property, onBack }) => {
     const amenityCounts = amenityVisualization?.amenityCounts || {};
 
     // Check if any amenity data is available
-    const hasAmenityData = Object.values(amenityCounts).some(count => count > 0);
+    const hasAmenityData = Object.values(amenityCounts).some(
+      (count) => count > 0
+    );
 
     if (!hasAmenityData && !loadingAmenities) {
       return (
@@ -398,18 +400,23 @@ const DetailedListingView = ({ property, onBack }) => {
     // Get transport mode info for display
     const getTransportModeInfo = () => {
       const modes = {
-        'walking': { label: 'Walking Distance', range: '~1.2km', emoji: '🚶' },
-        'bicycling': { label: 'Biking Distance', range: '~3.2km', emoji: '🚴' },
-        'driving': { label: 'Driving Distance', range: '~8.5km', emoji: '🚗' },
-        'transit': { label: 'Transit Distance', range: '~1.2km', emoji: '🚈' }
+        walking: { label: "Walking Distance", range: "~1.2km", emoji: "🚶" },
+        bicycling: { label: "Biking Distance", range: "~3.2km", emoji: "🚴" },
+        driving: { label: "Driving Distance", range: "~8.5km", emoji: "🚗" },
+        transit: { label: "Transit Distance", range: "~1.2km", emoji: "🚈" },
       };
-      return modes[transportMode] || modes['walking'];
+      return modes[transportMode] || modes["walking"];
     };
 
     const modeInfo = getTransportModeInfo();
 
-    const totalAmenities = Object.values(amenityCounts).reduce((sum, count) => sum + count, 0);
-    const amenityTypesCount = Object.values(amenityCounts).filter(count => count > 0).length;
+    const totalAmenities = Object.values(amenityCounts).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+    const amenityTypesCount = Object.values(amenityCounts).filter(
+      (count) => count > 0
+    ).length;
 
     return (
       <div className="space-y-4">
@@ -422,7 +429,9 @@ const DetailedListingView = ({ property, onBack }) => {
                 Showing closest amenity of each type
               </p>
               <p className="text-xs text-blue-700 mt-0.5">
-                {amenityTypesCount} marker{amenityTypesCount !== 1 ? 's' : ''} on map represent the nearest of {totalAmenities} total amenities in this area.
+                {amenityTypesCount} marker{amenityTypesCount !== 1 ? "s" : ""}{" "}
+                on map represent the nearest of {totalAmenities} total amenities
+                in this area.
               </p>
             </div>
           </div>
@@ -432,11 +441,16 @@ const DetailedListingView = ({ property, onBack }) => {
         <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
           <span className="text-2xl">{modeInfo.emoji}</span>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-gray-900">{modeInfo.label}</p>
-            <p className="text-xs text-gray-600">Approximately {modeInfo.range}</p>
-            {transportMode === 'transit' && (
+            <p className="text-sm font-semibold text-gray-900">
+              {modeInfo.label}
+            </p>
+            <p className="text-xs text-gray-600">
+              Approximately {modeInfo.range}
+            </p>
+            {transportMode === "transit" && (
               <p className="text-xs text-gray-500 mt-1 italic">
-                Note: Transit mode shows amenities within walking distance, as most transit users walk to reach nearby amenities.
+                Note: Transit mode shows amenities within walking distance, as
+                most transit users walk to reach nearby amenities.
               </p>
             )}
           </div>
@@ -452,8 +466,8 @@ const DetailedListingView = ({ property, onBack }) => {
                 key={amenity.id}
                 className={`p-3 rounded-lg border transition-colors ${
                   count > 0
-                    ? 'bg-primary-50 border-primary-200'
-                    : 'bg-gray-50 border-gray-200'
+                    ? "bg-primary-50 border-primary-200"
+                    : "bg-gray-50 border-gray-200"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
@@ -462,9 +476,11 @@ const DetailedListingView = ({ property, onBack }) => {
                     {amenity.label}
                   </span>
                 </div>
-                <p className={`text-2xl font-bold ${
-                  count > 0 ? 'text-primary-600' : 'text-gray-400'
-                }`}>
+                <p
+                  className={`text-2xl font-bold ${
+                    count > 0 ? "text-primary-600" : "text-gray-400"
+                  }`}
+                >
                   {count}
                 </p>
               </div>
@@ -475,7 +491,8 @@ const DetailedListingView = ({ property, onBack }) => {
         {/* Info Footer */}
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <p className="text-xs text-blue-800">
-            Counts are based on your current transport mode. Change the transport mode in the header to see different ranges.
+            Counts are based on your current transport mode. Change the
+            transport mode in the header to see different ranges.
           </p>
         </div>
       </div>

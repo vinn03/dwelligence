@@ -66,11 +66,11 @@ const Listing = ({
             e.stopPropagation();
             toggleFavorite(property.id, property);
           }}
-          className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+          className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-gray-100"
         >
           <svg
-            className={`w-5 h-5 ${
-              isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"
+            className={`w-4 h-4 ${
+              isFavorite ? "fill-red-500 text-red-500" : "text-gray-700"
             }`}
             fill={isFavorite ? "currentColor" : "none"}
             stroke="currentColor"
