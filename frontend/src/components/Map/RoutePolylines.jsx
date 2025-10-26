@@ -141,11 +141,11 @@ const RoutePolylines = () => {
             map: map,
             icon: {
               path: window.google.maps.SymbolPath.CIRCLE,
-              scale: 6,
+              scale: 4,
               fillColor: '#FFFFFF',
               fillOpacity: 1,
               strokeColor: '#000000',
-              strokeWeight: 2,
+              strokeWeight: 1.5,
             },
             title: transferLabel,
             zIndex: 2000
