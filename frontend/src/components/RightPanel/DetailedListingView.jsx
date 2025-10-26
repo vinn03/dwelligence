@@ -361,7 +361,7 @@ const DetailedListingView = ({ property, onBack }) => {
       { id: 'grocery', label: 'Groceries', emoji: '🛒' },
       { id: 'cafe', label: 'Cafes', emoji: '☕' },
       { id: 'restaurant', label: 'Restaurants', emoji: '🍽️' },
-      { id: 'transit_station', label: 'Transit', emoji: '🚉' },
+      { id: 'transit_station', label: 'Transit', emoji: '🚈' },
       { id: 'gym', label: 'Gyms', emoji: '💪' },
       { id: 'pharmacy', label: 'Pharmacies', emoji: '💊' },
       { id: 'community_center', label: 'Community', emoji: '🏢' },
@@ -401,7 +401,7 @@ const DetailedListingView = ({ property, onBack }) => {
         'walking': { label: 'Walking Distance', range: '~1.2km', emoji: '🚶' },
         'bicycling': { label: 'Biking Distance', range: '~3.2km', emoji: '🚴' },
         'driving': { label: 'Driving Distance', range: '~8.5km', emoji: '🚗' },
-        'transit': { label: 'Transit Distance', range: '~1.2km', emoji: '🚇' }
+        'transit': { label: 'Transit Distance', range: '~1.2km', emoji: '🚈' }
       };
       return modes[transportMode] || modes['walking'];
     };

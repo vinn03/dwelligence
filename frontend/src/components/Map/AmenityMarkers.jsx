@@ -14,7 +14,7 @@ const AmenityMarkers = () => {
     grocery: { emoji: '🛒', color: '#f59e0b' },
     cafe: { emoji: '☕', color: '#8b5cf6' },
     restaurant: { emoji: '🍽️', color: '#ef4444' },
-    transit_station: { emoji: '🚉', color: '#3b82f6' },
+    transit_station: { emoji: '🚈', color: '#3b82f6' },
     gym: { emoji: '💪', color: '#ec4899' },
     pharmacy: { emoji: '💊', color: '#14b8a6' },
     community_center: { emoji: '🏢', color: '#6b7280' },
