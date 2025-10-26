@@ -16,6 +16,8 @@ const MapContent = () => {
     detailedProperty,
     detailedViewTab,
     filters,
+    transportMode,
+    selectedAmenities,
     useRasterMap,
     setUseRasterMap,
   } = useAppContext();
@@ -34,7 +36,12 @@ const MapContent = () => {
     async (bounds) => {
       try {
         setLoading(true);
-        const response = await propertiesAPI.getInBounds(bounds, filters);
+        const response = await propertiesAPI.getInBounds(
+          bounds,
+          filters,
+          transportMode,
+          selectedAmenities
+        );
         setVisibleProperties(response.data);
       } catch (error) {
         console.error("Error fetching properties:", error);
@@ -42,7 +49,7 @@ const MapContent = () => {
         setLoading(false);
       }
     },
-    [setVisibleProperties, setLoading, filters]
+    [setVisibleProperties, setLoading, filters, transportMode, selectedAmenities]
   );
 
   // Handle map bounds changes (with debouncing)

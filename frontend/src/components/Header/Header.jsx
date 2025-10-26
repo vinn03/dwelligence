@@ -4,6 +4,7 @@ import SearchBar from './SearchBar';
 import WorkplaceInput from './WorkplaceInput';
 import TransportModeToggle from './TransportModeToggle';
 import Filters from './Filters';
+import AmenitiesToggle from './AmenitiesToggle';
 
 const Header = () => {
   const { workplace, useRasterMap, setUseRasterMap } = useAppContext();
@@ -27,6 +28,9 @@ const Header = () => {
 
           {/* Transport Mode Toggle */}
           <TransportModeToggle />
+
+          {/* Amenities Toggle */}
+          <AmenitiesToggle />
 
           {/* Map Rendering Toggle */}
           <button

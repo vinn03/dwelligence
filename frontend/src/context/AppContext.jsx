@@ -30,6 +30,9 @@ export const AppProvider = ({ children }) => {
     listingType: null
   });
 
+  // Selected amenities state (for Iteration 2)
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+
   // Properties state
   const [properties, setProperties] = useState([]);
   const [visibleProperties, setVisibleProperties] = useState([]);
@@ -121,6 +124,10 @@ export const AppProvider = ({ children }) => {
     // Filters
     filters,
     updateFilters,
+
+    // Amenities
+    selectedAmenities,
+    setSelectedAmenities,
 
     // Properties
     properties,
