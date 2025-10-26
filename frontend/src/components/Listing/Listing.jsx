@@ -24,7 +24,7 @@ const Listing = ({
     <div
       onClick={handleClick}
       className={`bg-white rounded-lg overflow-hidden ${
-        compact ? "shadow-sm" : "shadow-md hover:shadow-lg transition-shadow"
+        compact ? "shadow-md hover:shadow-lg" : "shadow-lg hover:shadow-xl transition-shadow"
       } ${onClick ? "cursor-pointer" : ""}`}
     >
       {/* Property Image */}

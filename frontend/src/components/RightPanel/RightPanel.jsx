@@ -85,10 +85,10 @@ const RightPanel = () => {
     }
 
     return (
-      <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
         {propertiesToShow.map((property) => (
           <div key={property.id} className="cursor-pointer" onClick={() => setDetailedProperty(property)}>
-            <Listing property={property} compact={false} />
+            <Listing property={property} compact={true} />
           </div>
         ))}
       </div>
