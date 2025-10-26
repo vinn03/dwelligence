@@ -16,12 +16,12 @@ const PropertyCenterMarker = () => {
       setMarker(null);
     }
 
-    // Only render when on nearby tab with a detailed property
+    // Only render when viewing detailed property in details, commute, or nearby tabs
     if (
       !map ||
       !window.google ||
       !detailedProperty ||
-      detailedViewTab !== 'nearby'
+      (detailedViewTab !== 'details' && detailedViewTab !== 'commute' && detailedViewTab !== 'nearby')
     ) {
       setShowTooltip(false);
       return;
