@@ -58,12 +58,17 @@ export const AppProvider = ({ children }) => {
 
   // Detailed view state
   const [detailedProperty, setDetailedProperty] = useState(null);
-  const [detailedViewTab, setDetailedViewTab] = useState('details'); // 'details' | 'commute' | 'nearby'
+  const [detailedViewTab, setDetailedViewTab] = useState('details'); // 'details' | 'commute' | 'nearby' | 'ask'
   const [selectedRoutes, setSelectedRoutes] = useState([]); // Routes to render on map
   const [selectedRouteIndex, setSelectedRouteIndex] = useState(0); // Which route is currently selected/highlighted
 
   // Amenity visualization state (for Nearby tab)
   const [amenityVisualization, setAmenityVisualization] = useState(null); // { hexBoundary, amenities, h3Index }
+
+  // AI Search state (Iteration 3)
+  const [searchMode, setSearchMode] = useState('search'); // 'search' | 'ask'
+  const [aiResults, setAiResults] = useState([]); // Properties from AI search
+  const [aiInterpretation, setAiInterpretation] = useState(null); // { query, summary, totalResults }
 
   // Persist workplace to localStorage
   useEffect(() => {
@@ -165,7 +170,15 @@ export const AppProvider = ({ children }) => {
 
     // Amenity visualization
     amenityVisualization,
-    setAmenityVisualization
+    setAmenityVisualization,
+
+    // AI Search
+    searchMode,
+    setSearchMode,
+    aiResults,
+    setAiResults,
+    aiInterpretation,
+    setAiInterpretation
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

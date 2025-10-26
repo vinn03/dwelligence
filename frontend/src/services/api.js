@@ -49,6 +49,11 @@ export const propertiesAPI = {
   // Create property (for testing)
   create: (propertyData) => {
     return api.post('/properties', propertyData);
+  },
+
+  // Ask question about nearby POIs for a property (Iteration 3)
+  askAboutListing: (propertyId, question) => {
+    return api.post(`/properties/${propertyId}/ask`, { question });
   }
 };
 
@@ -81,6 +86,19 @@ export const commuteAPI = {
       origin,
       destination,
       mode
+    });
+  }
+};
+
+// Search API (Iteration 3 - AI-powered search)
+export const searchAPI = {
+  // Natural language AI search
+  aiSearch: (query, workplace = null, filters = {}, maxResults = 20) => {
+    return api.post('/search/ai', {
+      query,
+      workplace,
+      filters,
+      maxResults
     });
   }
 };

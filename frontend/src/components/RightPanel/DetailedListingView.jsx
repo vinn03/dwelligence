@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAppContext } from "../../context/AppContext";
 import { commuteAPI, propertiesAPI } from "../../services/api";
+import AskListingTab from "./AskListingTab";
 
 const DetailedListingView = ({ property, onBack }) => {
   const {
@@ -594,6 +595,31 @@ const DetailedListingView = ({ property, onBack }) => {
             </svg>
           )}
         </button>
+        {/* Ask AI Button - Bottom Left */}
+        <button
+          onClick={() => setDetailedViewTab("ask")}
+          className={`absolute bottom-4 left-4 px-3 py-2 rounded-full shadow-lg transition-all flex items-center gap-2 ${
+            detailedViewTab === "ask"
+              ? "bg-primary-600 text-white"
+              : "bg-white text-gray-700 hover:bg-primary-50"
+          }`}
+          title="Ask about this property"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+            />
+          </svg>
+          <span className="text-sm font-medium">Ask AI</span>
+        </button>
       </div>
 
       {/* Tabs */}
@@ -637,6 +663,7 @@ const DetailedListingView = ({ property, onBack }) => {
         {detailedViewTab === "details" && renderDetailsTab()}
         {detailedViewTab === "commute" && renderCommuteTab()}
         {detailedViewTab === "nearby" && renderNearbyTab()}
+        {detailedViewTab === "ask" && <AskListingTab property={property} />}
       </div>
     </div>
   );
