@@ -7,9 +7,12 @@ import { propertiesAPI } from '../../services/api';
 import { useCommuteCalculation } from '../../hooks/useCommuteCalculation';
 
 const MapContent = () => {
-  const { visibleProperties, setVisibleProperties, workplace, mapBounds, setMapBounds, setLoading } = useAppContext();
+  const { visibleProperties, setVisibleProperties, workplace, mapBounds, setMapBounds, setLoading, detailedProperty, detailedViewTab } = useAppContext();
   const map = useMap();
   const debounceTimer = useRef(null);
+
+  // Determine if we should hide property markers
+  const shouldHideMarkers = detailedProperty && (detailedViewTab === 'commute' || detailedViewTab === 'nearby');
 
   // Automatically calculate commutes when properties, workplace, or transport mode changes
   useCommuteCalculation();
@@ -86,8 +89,8 @@ const MapContent = () => {
 
   return (
     <>
-      {/* Render property markers */}
-      {visibleProperties.map((property) => (
+      {/* Render property markers (hidden when viewing commute/nearby tabs) */}
+      {!shouldHideMarkers && visibleProperties.map((property) => (
         <PropertyMarker key={property.id} property={property} />
       ))}
 

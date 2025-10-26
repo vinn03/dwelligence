@@ -13,7 +13,10 @@ const RightPanel = () => {
     calculatingCommutes,
     workplace,
     detailedProperty,
-    setDetailedProperty
+    setDetailedProperty,
+    setSelectedRoutes,
+    setSelectedRouteIndex,
+    setDetailedViewTab
   } = useAppContext();
 
   // Get favorite properties
@@ -94,6 +97,9 @@ const RightPanel = () => {
           property={detailedProperty}
           onBack={() => {
             setDetailedProperty(null);
+            setSelectedRoutes([]);
+            setSelectedRouteIndex(0);
+            setDetailedViewTab('details');
           }}
         />
       </div>
