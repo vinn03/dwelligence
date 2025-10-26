@@ -25,6 +25,7 @@ export const propertiesAPI = {
     if (filters.bedrooms) filterParams.bedrooms = filters.bedrooms;
     if (filters.bathrooms) filterParams.bathrooms = filters.bathrooms;
     if (filters.propertyType) filterParams.propertyType = filters.propertyType;
+    if (filters.listingType) filterParams.listingType = filters.listingType;
 
     // Add transport mode
     if (transportMode) filterParams.transportMode = transportMode;

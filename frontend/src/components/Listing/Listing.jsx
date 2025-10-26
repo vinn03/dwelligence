@@ -98,7 +98,7 @@ const Listing = ({
             ${property.price.toLocaleString()}
           </span>
           <span className="text-sm text-gray-500">
-            {property.listing_type === "rent" ? "/month" : ""}
+            {property.saleType === "rent" ? "/month" : ""}
           </span>
         </div>
 

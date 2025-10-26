@@ -3,6 +3,7 @@ import { APIProvider } from "@vis.gl/react-google-maps";
 import SearchBar from "./SearchBar";
 import WorkplaceInput from "./WorkplaceInput";
 import TransportModeToggle from "./TransportModeToggle";
+import ListingTypeToggle from "./ListingTypeToggle";
 import Filters from "./Filters";
 
 const Header = () => {
@@ -16,6 +17,9 @@ const Header = () => {
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-primary-600">Dwelligence</h1>
           </div>
+
+          {/* Listing Type Toggle (Rent/Buy) */}
+          <ListingTypeToggle />
 
           {/* Search Bar */}
           <div className="flex-1 max-w-md">

@@ -27,7 +27,7 @@ export const AppProvider = ({ children }) => {
     bedrooms: null,
     bathrooms: null,
     propertyType: null,
-    listingType: null
+    listingType: 'rent' // Default to rent on initial load
   });
 
   // Properties state
