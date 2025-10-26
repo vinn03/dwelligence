@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import TabsContainer from './TabsContainer';
 import Listing from '../Listing/Listing';
+import SkeletonCard from '../Listing/SkeletonCard';
 import DetailedListingView from './DetailedListingView';
 
 const RightPanel = () => {
@@ -81,6 +82,17 @@ const RightPanel = () => {
       return (
         <div className="flex items-center justify-center h-full">
           <p className="text-gray-500">{emptyMessage}</p>
+        </div>
+      );
+    }
+
+    // Show skeleton cards while calculating commutes
+    if (calculatingCommutes && workplace && activeTab === 'top') {
+      return (
+        <div className="space-y-4">
+          {Array(5).fill(0).map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
         </div>
       );
     }
