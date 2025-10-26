@@ -88,7 +88,7 @@ const DetailedListingView = ({ property, onBack }) => {
 
   // Clear POI markers when leaving ask tab
   useEffect(() => {
-    if (detailedViewTab !== 'ask') {
+    if (detailedViewTab !== "ask") {
       setPoiMarkers([]);
     }
   }, [detailedViewTab, setPoiMarkers]);
@@ -120,7 +120,7 @@ const DetailedListingView = ({ property, onBack }) => {
         <div>
           <p className="text-sm text-gray-600">Square Feet</p>
           <p className="text-lg font-semibold">
-            {property.sq_ft?.toLocaleString() || "N/A"}
+            {property.sqFt?.toLocaleString() || "N/A"}
           </p>
         </div>
       </div>
@@ -285,110 +285,117 @@ const DetailedListingView = ({ property, onBack }) => {
                 }}
                 className="w-full p-2 bg-gray-50 hover:bg-gray-100 border-b border-gray-200 flex items-center justify-center gap-2 text-sm text-gray-600"
               >
-                <span>{isExpanded ? 'Hide' : 'Show'} directions</span>
+                <span>{isExpanded ? "Hide" : "Show"} directions</span>
                 <svg
-                  className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                  className={`w-4 h-4 transition-transform ${
+                    isExpanded ? "rotate-180" : ""
+                  }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </button>
 
               {/* Route Steps - Collapsible */}
               {isExpanded && (
                 <div className="p-3 space-y-3">
-                {route.steps.map((step, stepIndex) => (
-                  <div key={stepIndex} className="flex gap-3">
-                    {/* Icon */}
-                    <div
-                      className={`flex-shrink-0 mt-0.5 ${
-                        step.travelMode === "TRANSIT"
-                          ? "text-white p-1 rounded"
-                          : "text-gray-600"
-                      }`}
-                      style={
-                        step.travelMode === "TRANSIT" &&
-                        step.transit?.line?.color
-                          ? { backgroundColor: `#${step.transit.line.color}` }
-                          : {}
-                      }
-                    >
-                      {getTravelModeIcon(
-                        step.travelMode,
-                        step.transit?.line?.vehicle?.type
-                      )}
-                    </div>
+                  {route.steps.map((step, stepIndex) => (
+                    <div key={stepIndex} className="flex gap-3">
+                      {/* Icon */}
+                      <div
+                        className={`flex-shrink-0 mt-0.5 ${
+                          step.travelMode === "TRANSIT"
+                            ? "text-white p-1 rounded"
+                            : "text-gray-600"
+                        }`}
+                        style={
+                          step.travelMode === "TRANSIT" &&
+                          step.transit?.line?.color
+                            ? { backgroundColor: `#${step.transit.line.color}` }
+                            : {}
+                        }
+                      >
+                        {getTravelModeIcon(
+                          step.travelMode,
+                          step.transit?.line?.vehicle?.type
+                        )}
+                      </div>
 
-                    {/* Step Details */}
-                    <div className="flex-1 min-w-0">
-                      {step.travelMode === "TRANSIT" && step.transit ? (
-                        // Transit Step
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span
-                              className="px-2 py-0.5 rounded text-xs font-bold"
-                              style={{
-                                backgroundColor: step.transit.line.color
-                                  ? `#${step.transit.line.color}`
-                                  : "#666",
-                                color: step.transit.line.textColor
-                                  ? `#${step.transit.line.textColor}`
-                                  : "#fff",
-                              }}
-                            >
-                              {step.transit.line.shortName ||
-                                step.transit.line.name}
-                            </span>
-                            <span className="text-xs text-gray-600">
-                              {step.transit.line.vehicle.name}
-                            </span>
-                          </div>
-                          <div className="text-sm">
-                            <div className="text-gray-700">
-                              {step.transit.headsign && (
+                      {/* Step Details */}
+                      <div className="flex-1 min-w-0">
+                        {step.travelMode === "TRANSIT" && step.transit ? (
+                          // Transit Step
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span
+                                className="px-2 py-0.5 rounded text-xs font-bold"
+                                style={{
+                                  backgroundColor: step.transit.line.color
+                                    ? `#${step.transit.line.color}`
+                                    : "#666",
+                                  color: step.transit.line.textColor
+                                    ? `#${step.transit.line.textColor}`
+                                    : "#fff",
+                                }}
+                              >
+                                {step.transit.line.shortName ||
+                                  step.transit.line.name}
+                              </span>
+                              <span className="text-xs text-gray-600">
+                                {step.transit.line.vehicle.name}
+                              </span>
+                            </div>
+                            <div className="text-sm">
+                              <div className="text-gray-700">
+                                {step.transit.headsign && (
+                                  <span className="font-medium">
+                                    toward {step.transit.headsign}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-600 mt-1">
+                                From{" "}
                                 <span className="font-medium">
-                                  toward {step.transit.headsign}
+                                  {step.transit.departureStop.name}
                                 </span>
-                              )}
+                              </div>
+                              <div className="text-xs text-gray-600">
+                                To{" "}
+                                <span className="font-medium">
+                                  {step.transit.arrivalStop.name}
+                                </span>
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {step.transit.numStops}{" "}
+                                {step.transit.numStops === 1 ? "stop" : "stops"}{" "}
+                                • {step.duration}
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-600 mt-1">
-                              From{" "}
-                              <span className="font-medium">
-                                {step.transit.departureStop.name}
-                              </span>
-                            </div>
-                            <div className="text-xs text-gray-600">
-                              To{" "}
-                              <span className="font-medium">
-                                {step.transit.arrivalStop.name}
-                              </span>
-                            </div>
+                          </div>
+                        ) : (
+                          // Walking/Driving Step
+                          <div>
+                            <div
+                              className="text-sm text-gray-700"
+                              dangerouslySetInnerHTML={{
+                                __html: step.instruction,
+                              }}
+                            />
                             <div className="text-xs text-gray-500 mt-1">
-                              {step.transit.numStops}{" "}
-                              {step.transit.numStops === 1 ? "stop" : "stops"} •{" "}
-                              {step.duration}
+                              {step.distance} • {step.duration}
                             </div>
                           </div>
-                        </div>
-                      ) : (
-                        // Walking/Driving Step
-                        <div>
-                          <div
-                            className="text-sm text-gray-700"
-                            dangerouslySetInnerHTML={{
-                              __html: step.instruction,
-                            }}
-                          />
-                          <div className="text-xs text-gray-500 mt-1">
-                            {step.distance} • {step.duration}
-                          </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
                 </div>
               )}
             </div>
