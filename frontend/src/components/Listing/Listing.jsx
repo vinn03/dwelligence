@@ -128,7 +128,7 @@ const Listing = ({
             <span className="text-lg">
               {transportMode === "driving" && "🚗"}
               {transportMode === "bicycling" && "🚴"}
-              {transportMode === "transit" && "🚉"}
+              {transportMode === "transit" && "🚈"}
               {transportMode === "walking" && "🚶"}
             </span>
             <div className="flex-1">
