@@ -11,12 +11,12 @@ const api = axios.create({
 
 // Properties API
 export const propertiesAPI = {
-  // Get all properties with filters (using mock data for MVP)
+  // Get all properties with filters
   getAll: (filters = {}) => {
-    return api.get('/mock-properties', { params: filters });
+    return api.get('/properties', { params: filters });
   },
 
-  // Get properties within map bounds with filters (using mock data for MVP)
+  // Get properties within map bounds with filters
   getInBounds: (bounds, filters = {}) => {
     // Only include non-null filter values
     const filterParams = {};
@@ -26,14 +26,14 @@ export const propertiesAPI = {
     if (filters.bathrooms) filterParams.bathrooms = filters.bathrooms;
     if (filters.propertyType) filterParams.propertyType = filters.propertyType;
 
-    return api.get('/mock-properties/map-bounds', {
+    return api.get('/properties/map-bounds', {
       params: { ...bounds, ...filterParams }
     });
   },
 
-  // Get single property (using mock data for MVP)
+  // Get single property
   getById: (id) => {
-    return api.get(`/mock-properties/${id}`);
+    return api.get(`/properties/${id}`);
   },
 
   // Create property (for testing)

@@ -141,16 +141,6 @@ const RightPanel = () => {
           </div>
         )}
 
-        {/* Show calculating commutes indicator */}
-        {calculatingCommutes && workplace && activeTab === 'top' && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-            <div className="flex items-center gap-2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-600"></div>
-              <p className="text-sm text-amber-800">Calculating commutes...</p>
-            </div>
-          </div>
-        )}
-
         {renderProperties()}
       </div>
     </div>

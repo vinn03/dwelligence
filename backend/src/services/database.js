@@ -21,6 +21,23 @@ pool.on('error', (err) => {
 });
 
 // Database query methods
+// Helper function to transform snake_case DB columns to camelCase for frontend
+const transformProperty = (row) => ({
+  id: row.id,
+  name: row.name,
+  address: row.address,
+  lat: parseFloat(row.lat),
+  lng: parseFloat(row.lng),
+  price: parseFloat(row.price),
+  bedrooms: row.bedrooms,
+  bathrooms: parseFloat(row.bathrooms),
+  sqFt: row.sq_ft,
+  propertyType: row.property_type,
+  saleType: row.sale_type,
+  description: row.description,
+  imageUrl: row.image_url
+});
+
 export const db = {
   /**
    * Get all properties with optional filters
@@ -89,7 +106,7 @@ export const db = {
     query += ' ORDER BY created_at DESC';
 
     const result = await pool.query(query, params);
-    return result.rows;
+    return result.rows.map(transformProperty);
   },
 
   /**
@@ -161,7 +178,7 @@ export const db = {
     query += ' LIMIT 100'; // Reasonable limit for map viewport
 
     const result = await pool.query(query, params);
-    return result.rows;
+    return result.rows.map(transformProperty);
   },
 
   /**
@@ -189,7 +206,7 @@ export const db = {
     `;
 
     const result = await pool.query(query, [id]);
-    return result.rows[0] || null;
+    return result.rows[0] ? transformProperty(result.rows[0]) : null;
   },
 
   /**
@@ -247,7 +264,7 @@ export const db = {
       image_url
     ]);
 
-    return result.rows[0];
+    return result.rows[0] ? transformProperty(result.rows[0]) : null;
   }
 };
 

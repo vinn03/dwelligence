@@ -1,6 +1,12 @@
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext } from "../../context/AppContext";
 
-const Listing = ({ property, compact = false, showClose = false, onClose = null, onClick = null }) => {
+const Listing = ({
+  property,
+  compact = false,
+  showClose = false,
+  onClose = null,
+  onClick = null,
+}) => {
   const { favorites, toggleFavorite, transportMode } = useAppContext();
 
   const isFavorite = favorites.includes(property.id);
@@ -18,15 +24,15 @@ const Listing = ({ property, compact = false, showClose = false, onClose = null,
     <div
       onClick={handleClick}
       className={`bg-white rounded-lg overflow-hidden ${
-        compact ? 'shadow-sm' : 'shadow-md hover:shadow-lg transition-shadow'
-      } ${onClick ? 'cursor-pointer' : ''}`}
+        compact ? "shadow-sm" : "shadow-md hover:shadow-lg transition-shadow"
+      } ${onClick ? "cursor-pointer" : ""}`}
     >
       {/* Property Image */}
       <div className="relative">
         <img
-          src={property.image_url || 'https://via.placeholder.com/400x300'}
+          src={property.imageUrl || "https://via.placeholder.com/400x300"}
           alt={property.address}
-          className={`w-full object-cover ${compact ? 'h-32' : 'h-48'}`}
+          className={`w-full object-cover ${compact ? "h-32" : "h-48"}`}
         />
 
         {/* Close Button (for tooltip) */}
@@ -64,9 +70,9 @@ const Listing = ({ property, compact = false, showClose = false, onClose = null,
         >
           <svg
             className={`w-5 h-5 ${
-              isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'
+              isFavorite ? "fill-red-500 text-red-500" : "text-gray-400"
             }`}
-            fill={isFavorite ? 'currentColor' : 'none'}
+            fill={isFavorite ? "currentColor" : "none"}
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
@@ -81,14 +87,18 @@ const Listing = ({ property, compact = false, showClose = false, onClose = null,
       </div>
 
       {/* Property Details */}
-      <div className={`${compact ? 'p-3' : 'p-4'}`}>
+      <div className={`${compact ? "p-3" : "p-4"}`}>
         {/* Price */}
         <div className="flex items-center justify-between mb-2">
-          <span className={`font-bold text-primary-600 ${compact ? 'text-lg' : 'text-2xl'}`}>
+          <span
+            className={`font-bold text-primary-600 ${
+              compact ? "text-lg" : "text-2xl"
+            }`}
+          >
             ${property.price.toLocaleString()}
           </span>
           <span className="text-sm text-gray-500">
-            {property.listing_type === 'rent' ? '/month' : ''}
+            {property.listing_type === "rent" ? "/month" : ""}
           </span>
         </div>
 
@@ -106,7 +116,9 @@ const Listing = ({ property, compact = false, showClose = false, onClose = null,
         </div>
 
         {/* Address */}
-        <p className={`text-gray-700 ${compact ? 'text-sm' : 'text-base'} mb-2`}>
+        <p
+          className={`text-gray-700 ${compact ? "text-sm" : "text-base"} mb-2`}
+        >
           {property.address}
         </p>
 
@@ -114,10 +126,10 @@ const Listing = ({ property, compact = false, showClose = false, onClose = null,
         {commute && commute.duration && (
           <div className="flex items-center gap-2 mt-3 p-2 bg-gray-50 rounded-lg">
             <span className="text-lg">
-              {transportMode === 'driving' && '🚗'}
-              {transportMode === 'bicycling' && '🚴'}
-              {transportMode === 'transit' && '🚉'}
-              {transportMode === 'walking' && '🚶'}
+              {transportMode === "driving" && "🚗"}
+              {transportMode === "bicycling" && "🚴"}
+              {transportMode === "transit" && "🚉"}
+              {transportMode === "walking" && "🚶"}
             </span>
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-900">
