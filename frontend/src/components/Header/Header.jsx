@@ -45,7 +45,7 @@ const Header = () => {
                 : "Using Vector (High Quality)"
             }
           >
-            {useRasterMap ? "🖼️ Raster" : "🗺️ Vector"}
+            {useRasterMap ? "🖼️" : "🗺️"}
           </button>
         </div>
 

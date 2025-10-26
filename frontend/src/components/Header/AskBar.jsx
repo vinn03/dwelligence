@@ -69,7 +69,7 @@ const AskBar = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative flex-1">
       <form onSubmit={handleAskSearch}>
         <input
           type="text"
