@@ -1,9 +1,15 @@
-import { useState } from 'react';
-import { useAppContext } from '../../context/AppContext';
+import { useState } from "react";
+import { useAppContext } from "../../../context/AppContext";
 
 const AskBar = () => {
-  const [query, setQuery] = useState('');
-  const { workplace, setAiResults, setAiInterpretation, setActiveTab, setLoading } = useAppContext();
+  const [query, setQuery] = useState("");
+  const {
+    workplace,
+    setAiResults,
+    setAiInterpretation,
+    setActiveTab,
+    setLoading,
+  } = useAppContext();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
 
@@ -19,18 +25,19 @@ const AskBar = () => {
     setLoading(true);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
       const response = await fetch(`${API_URL}/search/ai`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           query: query.trim(),
           workplace: workplace,
-          maxResults: 20
-        })
+          maxResults: 20,
+        }),
       });
 
       if (!response.ok) {
@@ -52,16 +59,18 @@ const AskBar = () => {
       setAiInterpretation({
         query: data.query,
         summary: data.interpretation,
-        totalResults: data.totalResults
+        totalResults: data.totalResults,
       });
 
       // Switch to AI Results tab
-      setActiveTab('ai-results');
+      setActiveTab("ai-results");
 
-      console.log('[AskBar] AI search completed:', data);
+      console.log("[AskBar] AI search completed:", data);
     } catch (err) {
-      console.error('[AskBar] Error:', err);
-      setError(err.message || 'Failed to process your query. Please try again.');
+      console.error("[AskBar] Error:", err);
+      setError(
+        err.message || "Failed to process your query. Please try again."
+      );
     } finally {
       setIsProcessing(false);
       setLoading(false);
@@ -84,8 +93,8 @@ const AskBar = () => {
           disabled={isProcessing || !query.trim()}
           className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded transition-colors ${
             isProcessing || !query.trim()
-              ? 'text-gray-300 cursor-not-allowed'
-              : 'hover:bg-gray-100 text-primary-600'
+              ? "text-gray-300 cursor-not-allowed"
+              : "hover:bg-gray-100 text-primary-600"
           }`}
         >
           {isProcessing ? (

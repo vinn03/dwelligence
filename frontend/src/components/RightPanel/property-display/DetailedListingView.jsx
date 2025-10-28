@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useAppContext } from "../../context/AppContext";
-import { commuteAPI, propertiesAPI } from "../../services/api";
-import AskListingTab from "./AskListingTab";
+import { useAppContext } from "../../../context/AppContext";
+import { commuteAPI, propertiesAPI } from "../../../services/api";
+import AskListingTab from "../ai/AskListingTab";
 
 const DetailedListingView = ({ property, onBack }) => {
   const {
@@ -9,7 +9,6 @@ const DetailedListingView = ({ property, onBack }) => {
     transportMode,
     detailedViewTab,
     setDetailedViewTab,
-    selectedRoutes,
     setSelectedRoutes,
     selectedRouteIndex,
     setSelectedRouteIndex,
@@ -19,6 +18,7 @@ const DetailedListingView = ({ property, onBack }) => {
     setAmenityVisualization,
     setPoiMarkers,
   } = useAppContext();
+
   const [routes, setRoutes] = useState([]);
   const [loadingRoutes, setLoadingRoutes] = useState(false);
   const [loadingAmenities, setLoadingAmenities] = useState(false);
@@ -241,7 +241,7 @@ const DetailedListingView = ({ property, onBack }) => {
 
     return (
       <div className="space-y-4">
-        {routes.map((route, index) => {
+        {routes.map((route) => {
           const isSelected = selectedRouteIndex === route.routeIndex;
           const isExpanded = expandedRoutes.has(route.routeIndex);
           return (

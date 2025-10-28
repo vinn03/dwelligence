@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
-import { useAppContext } from "../../context/AppContext";
-import Tooltip from "./Tooltip";
+import { useAppContext } from "../../../context/AppContext";
+import Tooltip from "../overlays/Tooltip";
 
 const PropertyCenterMarker = () => {
   const { detailedProperty, detailedViewTab } = useAppContext();
@@ -21,14 +21,17 @@ const PropertyCenterMarker = () => {
       !map ||
       !window.google ||
       !detailedProperty ||
-      (detailedViewTab !== 'details' && detailedViewTab !== 'commute' && detailedViewTab !== 'nearby' && detailedViewTab !== 'ask')
+      (detailedViewTab !== "details" &&
+        detailedViewTab !== "commute" &&
+        detailedViewTab !== "nearby" &&
+        detailedViewTab !== "ask")
     ) {
       setShowTooltip(false);
       return;
     }
 
     // Create a custom pin-shaped marker for the property
-    const markerDiv = document.createElement('div');
+    const markerDiv = document.createElement("div");
     markerDiv.style.cssText = `
       width: 50px;
       height: 60px;
@@ -51,8 +54,8 @@ const PropertyCenterMarker = () => {
       </svg>
     `;
 
-    markerDiv.onmouseenter = () => markerDiv.style.transform = 'scale(1.1)';
-    markerDiv.onmouseleave = () => markerDiv.style.transform = 'scale(1)';
+    markerDiv.onmouseenter = () => (markerDiv.style.transform = "scale(1.1)");
+    markerDiv.onmouseleave = () => (markerDiv.style.transform = "scale(1)");
 
     // Create marker using OverlayView for custom HTML
     class PropertyMarker extends window.google.maps.OverlayView {
@@ -75,8 +78,8 @@ const PropertyCenterMarker = () => {
         );
         if (position) {
           // Center the pin horizontally and position point at the location
-          this.div.style.left = (position.x - 25) + 'px';
-          this.div.style.top = (position.y - 60) + 'px';
+          this.div.style.left = position.x - 25 + "px";
+          this.div.style.top = position.y - 60 + "px";
         }
       }
 
@@ -95,7 +98,7 @@ const PropertyCenterMarker = () => {
     propertyMarker.setMap(map);
 
     // Add click listener to the div element
-    markerDiv.addEventListener('click', () => {
+    markerDiv.addEventListener("click", () => {
       setShowTooltip(true);
     });
 

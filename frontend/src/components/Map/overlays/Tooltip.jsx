@@ -1,6 +1,6 @@
-import { InfoWindow } from '@vis.gl/react-google-maps';
-import { useAppContext } from '../../context/AppContext';
-import Listing from '../Listing/Listing';
+import { InfoWindow } from "@vis.gl/react-google-maps";
+import { useAppContext } from "../../../context/AppContext";
+import Listing from "../../Listing/Listing";
 
 const Tooltip = ({ property, onClose }) => {
   const { setDetailedProperty } = useAppContext();

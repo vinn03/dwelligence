@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import { AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
-import { useAppContext } from '../../context/AppContext';
-import Tooltip from './Tooltip';
+import { useState, useEffect } from "react";
+import { AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
+import { useAppContext } from "../../../context/AppContext";
+import Tooltip from "../overlays/Tooltip";
 
 const PropertyMarker = ({ property }) => {
-  const { setSelectedProperty, selectedProperty, useRasterMap } = useAppContext();
+  const { setSelectedProperty, selectedProperty, useRasterMap } =
+    useAppContext();
   const [showTooltip, setShowTooltip] = useState(false);
   const [classicMarker, setClassicMarker] = useState(null);
   const map = useMap();
@@ -59,22 +60,22 @@ const PropertyMarker = ({ property }) => {
       map: map,
       label: {
         text: priceLabel,
-        color: isSelected ? '#FFFFFF' : '#1F2937',
-        fontSize: '12px',
-        fontWeight: 'bold'
+        color: isSelected ? "#FFFFFF" : "#1F2937",
+        fontSize: "12px",
+        fontWeight: "bold",
       },
       icon: {
         path: window.google.maps.SymbolPath.CIRCLE,
         scale: isSelected ? 20 : 18,
-        fillColor: isSelected ? '#2563EB' : '#FFFFFF',
+        fillColor: isSelected ? "#2563EB" : "#FFFFFF",
         fillOpacity: 1,
-        strokeColor: isSelected ? '#1E40AF' : '#E5E7EB',
+        strokeColor: isSelected ? "#1E40AF" : "#E5E7EB",
         strokeWeight: 2,
-        labelOrigin: new window.google.maps.Point(0, 0)
-      }
+        labelOrigin: new window.google.maps.Point(0, 0),
+      },
     });
 
-    marker.addListener('click', handleClick);
+    marker.addListener("click", handleClick);
     setClassicMarker(marker);
 
     return () => {
@@ -105,17 +106,17 @@ const PropertyMarker = ({ property }) => {
       classicMarker.setIcon({
         path: window.google.maps.SymbolPath.CIRCLE,
         scale: isSelected ? 20 : 18,
-        fillColor: isSelected ? '#2563EB' : '#FFFFFF',
+        fillColor: isSelected ? "#2563EB" : "#FFFFFF",
         fillOpacity: 1,
-        strokeColor: isSelected ? '#1E40AF' : '#E5E7EB',
+        strokeColor: isSelected ? "#1E40AF" : "#E5E7EB",
         strokeWeight: 2,
-        labelOrigin: new window.google.maps.Point(0, 0)
+        labelOrigin: new window.google.maps.Point(0, 0),
       });
       classicMarker.setLabel({
         text: priceLabel,
-        color: isSelected ? '#FFFFFF' : '#1F2937',
-        fontSize: '12px',
-        fontWeight: 'bold'
+        color: isSelected ? "#FFFFFF" : "#1F2937",
+        fontSize: "12px",
+        fontWeight: "bold",
       });
     }
   }, [isSelected, classicMarker, property.price]);
@@ -131,8 +132,8 @@ const PropertyMarker = ({ property }) => {
           <div
             className={`px-3 py-1.5 rounded-full font-semibold text-sm shadow-lg cursor-pointer transition-all ${
               isSelected
-                ? 'bg-primary-600 text-white scale-110'
-                : 'bg-white text-gray-900 hover:bg-primary-50'
+                ? "bg-primary-600 text-white scale-110"
+                : "bg-white text-gray-900 hover:bg-primary-50"
             }`}
           >
             ${property.price.toLocaleString()}

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useAppContext } from "../../context/AppContext";
+import { useAppContext } from "../../../context/AppContext";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 
 // Helper function to extract the first part of an address
@@ -7,7 +7,7 @@ const getShortAddress = (fullAddress) => {
   if (!fullAddress) return "";
 
   // Split by comma and take the first part
-  const firstPart = fullAddress.split(',')[0].trim();
+  const firstPart = fullAddress.split(",")[0].trim();
 
   return firstPart;
 };

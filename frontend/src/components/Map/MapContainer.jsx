@@ -1,11 +1,11 @@
 import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
 import { useAppContext } from "../../context/AppContext";
-import PropertyMarker from "./PropertyMarker";
-import RoutePolylines from "./RoutePolylines";
-import AmenityMarkers from "./AmenityMarkers";
-import PropertyCenterMarker from "./PropertyCenterMarker";
-import WorkplaceMarker from "./WorkplaceMarker";
-import POIMarkers from "./POIMarkers";
+import PropertyMarker from "./markers/PropertyMarker";
+import RoutePolylines from "./overlays/RoutePolylines";
+import AmenityMarkers from "./markers/AmenityMarkers";
+import PropertyCenterMarker from "./markers/PropertyCenterMarker";
+import WorkplaceMarker from "./markers/WorkplaceMarker";
+import POIMarkers from "./markers/POIMarkers";
 import { useEffect, useCallback, useRef } from "react";
 import { propertiesAPI } from "../../services/api";
 

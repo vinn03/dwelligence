@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
-import { useAppContext } from "../../context/AppContext";
+import { useAppContext } from "../../../context/AppContext";
 
 const AmenityMarkers = () => {
   const { amenityVisualization, detailedViewTab } = useAppContext();
@@ -10,19 +10,19 @@ const AmenityMarkers = () => {
 
   // Amenity type to emoji and color mapping
   const amenityConfig = {
-    park: { emoji: '🌳', color: '#10b981' },
-    grocery: { emoji: '🛒', color: '#f59e0b' },
-    cafe: { emoji: '☕', color: '#8b5cf6' },
-    restaurant: { emoji: '🍽️', color: '#ef4444' },
-    transit_station: { emoji: '🚈', color: '#3b82f6' },
-    gym: { emoji: '💪', color: '#ec4899' },
-    pharmacy: { emoji: '💊', color: '#14b8a6' },
-    community_center: { emoji: '🏢', color: '#6b7280' },
+    park: { emoji: "🌳", color: "#10b981" },
+    grocery: { emoji: "🛒", color: "#f59e0b" },
+    cafe: { emoji: "☕", color: "#8b5cf6" },
+    restaurant: { emoji: "🍽️", color: "#ef4444" },
+    transit_station: { emoji: "🚈", color: "#3b82f6" },
+    gym: { emoji: "💪", color: "#ec4899" },
+    pharmacy: { emoji: "💊", color: "#14b8a6" },
+    community_center: { emoji: "🏢", color: "#6b7280" },
   };
 
   useEffect(() => {
     // Clear existing markers and info window
-    markers.forEach(marker => {
+    markers.forEach((marker) => {
       if (marker.setMap) {
         marker.setMap(null);
       }
@@ -38,7 +38,7 @@ const AmenityMarkers = () => {
       !window.google ||
       !amenityVisualization ||
       !amenityVisualization.amenities ||
-      detailedViewTab !== 'nearby'
+      detailedViewTab !== "nearby"
     ) {
       setMarkers([]);
       return;
@@ -50,10 +50,13 @@ const AmenityMarkers = () => {
 
     // Create markers for each amenity
     const newMarkers = amenityVisualization.amenities.map((amenity) => {
-      const config = amenityConfig[amenity.type] || { emoji: '📍', color: '#6b7280' };
+      const config = amenityConfig[amenity.type] || {
+        emoji: "📍",
+        color: "#6b7280",
+      };
 
       // Create custom HTML marker with emoji
-      const markerDiv = document.createElement('div');
+      const markerDiv = document.createElement("div");
       markerDiv.style.cssText = `
         width: 40px;
         height: 40px;
@@ -69,8 +72,9 @@ const AmenityMarkers = () => {
         transition: transform 0.2s;
       `;
       markerDiv.innerHTML = config.emoji;
-      markerDiv.onmouseenter = () => markerDiv.style.transform = 'scale(1.15)';
-      markerDiv.onmouseleave = () => markerDiv.style.transform = 'scale(1)';
+      markerDiv.onmouseenter = () =>
+        (markerDiv.style.transform = "scale(1.15)");
+      markerDiv.onmouseleave = () => (markerDiv.style.transform = "scale(1)");
 
       // Create marker using OverlayView for custom HTML
       class CustomMarker extends window.google.maps.OverlayView {
@@ -92,9 +96,9 @@ const AmenityMarkers = () => {
             new window.google.maps.LatLng(this.position.lat, this.position.lng)
           );
           if (position) {
-            this.div.style.left = (position.x - 20) + 'px';
-            this.div.style.top = (position.y - 20) + 'px';
-            this.div.style.position = 'absolute';
+            this.div.style.left = position.x - 20 + "px";
+            this.div.style.top = position.y - 20 + "px";
+            this.div.style.position = "absolute";
           }
         }
 
@@ -113,38 +117,48 @@ const AmenityMarkers = () => {
       marker.setMap(map);
 
       // Add click listener to the div element
-      markerDiv.addEventListener('click', () => {
+      markerDiv.addEventListener("click", () => {
         const distanceText = amenity.distance
           ? amenity.distance < 1000
             ? `${amenity.distance}m away`
             : `${(amenity.distance / 1000).toFixed(1)}km away`
-          : '';
+          : "";
 
         const content = `
           <div style="padding: 8px; min-width: 150px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
               <span style="font-size: 20px;">${config.emoji}</span>
               <h3 style="margin: 0; font-weight: 600; font-size: 14px; color: #111827;">
-                ${amenity.name || 'Unnamed'}
+                ${amenity.name || "Unnamed"}
               </h3>
             </div>
             <p style="margin: 4px 0 0 0; font-size: 12px; color: #6b7280; text-transform: capitalize;">
-              ${amenity.type.replace('_', ' ')}
+              ${amenity.type.replace("_", " ")}
             </p>
-            ${distanceText ? `
+            ${
+              distanceText
+                ? `
               <p style="margin: 4px 0 0 0; font-size: 12px; font-weight: 600; color: #059669;">
                 ${distanceText}
               </p>
-            ` : ''}
-            ${amenity.address ? `
+            `
+                : ""
+            }
+            ${
+              amenity.address
+                ? `
               <p style="margin: 4px 0 0 0; font-size: 11px; color: #9ca3af;">
                 ${amenity.address}
               </p>
-            ` : ''}
+            `
+                : ""
+            }
           </div>
         `;
         newInfoWindow.setContent(content);
-        newInfoWindow.setPosition(new window.google.maps.LatLng(amenity.lat, amenity.lng));
+        newInfoWindow.setPosition(
+          new window.google.maps.LatLng(amenity.lat, amenity.lng)
+        );
         newInfoWindow.open(map);
       });
 
@@ -169,9 +183,7 @@ const AmenityMarkers = () => {
 
       // Add all amenity locations to bounds
       amenityVisualization.amenities.forEach((amenity) => {
-        bounds.extend(
-          new window.google.maps.LatLng(amenity.lat, amenity.lng)
-        );
+        bounds.extend(new window.google.maps.LatLng(amenity.lat, amenity.lng));
       });
 
       // Fit the map to show all amenities with padding
@@ -186,7 +198,7 @@ const AmenityMarkers = () => {
 
     // Cleanup
     return () => {
-      newMarkers.forEach(marker => {
+      newMarkers.forEach((marker) => {
         if (marker.setMap) {
           marker.setMap(null);
         }

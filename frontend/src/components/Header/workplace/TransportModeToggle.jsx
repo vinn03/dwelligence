@@ -1,11 +1,11 @@
-import { useAppContext } from '../../context/AppContext';
-import { useState, useRef, useEffect } from 'react';
+import { useAppContext } from "../../../context/AppContext";
+import { useState, useRef, useEffect } from "react";
 
 const modes = [
-  { id: 'driving', label: 'Drive', icon: '🚗' },
-  { id: 'bicycling', label: 'Bike', icon: '🚴' },
-  { id: 'transit', label: 'Transit', icon: '🚈' },
-  { id: 'walking', label: 'Walk', icon: '🚶' }
+  { id: "driving", label: "Drive", icon: "🚗" },
+  { id: "bicycling", label: "Bike", icon: "🚴" },
+  { id: "transit", label: "Transit", icon: "🚈" },
+  { id: "walking", label: "Walk", icon: "🚶" },
 ];
 
 const TransportModeToggle = () => {
@@ -14,7 +14,8 @@ const TransportModeToggle = () => {
   const dropdownRef = useRef(null);
 
   // Get current mode details
-  const currentMode = modes.find(mode => mode.id === transportMode) || modes[2];
+  const currentMode =
+    modes.find((mode) => mode.id === transportMode) || modes[2];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -24,8 +25,8 @@ const TransportModeToggle = () => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleSelect = (modeId) => {
@@ -43,12 +44,19 @@ const TransportModeToggle = () => {
         <span>{currentMode.icon}</span>
         <span>{currentMode.label}</span>
         <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </button>
 
@@ -61,8 +69,8 @@ const TransportModeToggle = () => {
               onClick={() => handleSelect(mode.id)}
               className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 ${
                 transportMode === mode.id
-                  ? 'bg-primary-50 text-primary-700 font-medium'
-                  : 'text-gray-700'
+                  ? "bg-primary-50 text-primary-700 font-medium"
+                  : "text-gray-700"
               }`}
             >
               <span>{mode.icon}</span>

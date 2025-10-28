@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
-import { useAppContext } from "../../context/AppContext";
+import { useAppContext } from "../../../context/AppContext";
 
 const WorkplaceMarker = () => {
   const { workplace, detailedViewTab, detailedProperty } = useAppContext();
@@ -20,13 +20,13 @@ const WorkplaceMarker = () => {
       !window.google ||
       !workplace ||
       !detailedProperty ||
-      detailedViewTab !== 'commute'
+      detailedViewTab !== "commute"
     ) {
       return;
     }
 
     // Create a custom pin-shaped marker for the workplace
-    const markerDiv = document.createElement('div');
+    const markerDiv = document.createElement("div");
     markerDiv.style.cssText = `
       width: 50px;
       height: 60px;
@@ -70,8 +70,8 @@ const WorkplaceMarker = () => {
         );
         if (position) {
           // Center the pin horizontally and position point at the location
-          this.div.style.left = (position.x - 25) + 'px';
-          this.div.style.top = (position.y - 60) + 'px';
+          this.div.style.left = position.x - 25 + "px";
+          this.div.style.top = position.y - 60 + "px";
         }
       }
 

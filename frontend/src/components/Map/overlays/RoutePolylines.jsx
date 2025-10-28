@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
-import { useAppContext } from "../../context/AppContext";
+import { useAppContext } from "../../../context/AppContext";
 
 const RoutePolylines = () => {
   const { selectedRoutes, detailedProperty, selectedRouteIndex } =

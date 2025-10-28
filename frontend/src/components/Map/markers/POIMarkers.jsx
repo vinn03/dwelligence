@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
-import { useAppContext } from "../../context/AppContext";
+import { useAppContext } from "../../../context/AppContext";
 
 const POIMarkers = () => {
   const { poiMarkers, detailedViewTab, detailedProperty } = useAppContext();
@@ -18,7 +18,7 @@ const POIMarkers = () => {
 
   useEffect(() => {
     // Clear existing markers
-    markers.forEach(marker => {
+    markers.forEach((marker) => {
       if (marker.setMap) {
         marker.setMap(null);
       }
@@ -32,7 +32,7 @@ const POIMarkers = () => {
       !poiMarkers ||
       poiMarkers.length === 0 ||
       !detailedProperty ||
-      detailedViewTab !== 'ask'
+      detailedViewTab !== "ask"
     ) {
       setMarkers([]);
       return;
@@ -46,40 +46,54 @@ const POIMarkers = () => {
         map: map,
         label: {
           text: String(index + 1),
-          color: 'white',
-          fontWeight: 'bold',
-          fontSize: '14px'
+          color: "white",
+          fontWeight: "bold",
+          fontSize: "14px",
         },
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
           scale: 16,
-          fillColor: '#3b82f6',
+          fillColor: "#3b82f6",
           fillOpacity: 1,
-          strokeColor: 'white',
+          strokeColor: "white",
           strokeWeight: 3,
         },
-        title: poi.name
+        title: poi.name,
       });
 
       // Use Google Places API to get full place details and show native info window
-      marker.addListener('click', () => {
+      marker.addListener("click", () => {
         if (poi.placeId) {
           const request = {
             placeId: poi.placeId,
-            fields: ['name', 'formatted_address', 'rating', 'user_ratings_total', 'opening_hours', 'photos', 'formatted_phone_number', 'website']
+            fields: [
+              "name",
+              "formatted_address",
+              "rating",
+              "user_ratings_total",
+              "opening_hours",
+              "photos",
+              "formatted_phone_number",
+              "website",
+            ],
           };
 
           placesService.getDetails(request, (place, status) => {
             if (status === window.google.maps.places.PlacesServiceStatus.OK) {
               // Create rich info window content with Google Places data
-              const photoUrl = place.photos && place.photos.length > 0
-                ? place.photos[0].getUrl({ maxWidth: 300, maxHeight: 200 })
-                : null;
+              const photoUrl =
+                place.photos && place.photos.length > 0
+                  ? place.photos[0].getUrl({ maxWidth: 300, maxHeight: 200 })
+                  : null;
 
               const content = `
                 <div style="max-width: 300px;">
-                  ${photoUrl ? `<img src="${photoUrl}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px 8px 0 0; margin: -16px -16px 12px -16px;" />` : ''}
-                  <div style="padding: ${photoUrl ? '0' : '8px'};">
+                  ${
+                    photoUrl
+                      ? `<img src="${photoUrl}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px 8px 0 0; margin: -16px -16px 12px -16px;" />`
+                      : ""
+                  }
+                  <div style="padding: ${photoUrl ? "0" : "8px"};">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                       <span style="
                         background-color: #3b82f6;
@@ -98,43 +112,75 @@ const POIMarkers = () => {
                         ${place.name}
                       </h3>
                     </div>
-                    ${place.rating ? `
+                    ${
+                      place.rating
+                        ? `
                       <div style="margin: 8px 0; display: flex; align-items: center; gap: 4px;">
                         <span style="color: #f59e0b; font-size: 16px;">★</span>
-                        <span style="font-weight: 600; color: #111827;">${place.rating}</span>
-                        ${place.user_ratings_total ? `
+                        <span style="font-weight: 600; color: #111827;">${
+                          place.rating
+                        }</span>
+                        ${
+                          place.user_ratings_total
+                            ? `
                           <span style="color: #6b7280; font-size: 12px;">(${place.user_ratings_total.toLocaleString()} reviews)</span>
-                        ` : ''}
+                        `
+                            : ""
+                        }
                       </div>
-                    ` : ''}
-                    ${place.opening_hours ? `
-                      <p style="margin: 4px 0; font-size: 12px; color: ${place.opening_hours.open_now ? '#059669' : '#dc2626'}; font-weight: 600;">
-                        ${place.opening_hours.open_now ? '🟢 Open now' : '🔴 Closed'}
+                    `
+                        : ""
+                    }
+                    ${
+                      place.opening_hours
+                        ? `
+                      <p style="margin: 4px 0; font-size: 12px; color: ${
+                        place.opening_hours.open_now ? "#059669" : "#dc2626"
+                      }; font-weight: 600;">
+                        ${
+                          place.opening_hours.open_now
+                            ? "🟢 Open now"
+                            : "🔴 Closed"
+                        }
                       </p>
-                    ` : ''}
-                    ${place.formatted_address ? `
+                    `
+                        : ""
+                    }
+                    ${
+                      place.formatted_address
+                        ? `
                       <p style="margin: 8px 0 4px 0; font-size: 12px; color: #6b7280;">
                         📍 ${place.formatted_address}
                       </p>
-                    ` : ''}
-                    ${place.formatted_phone_number ? `
+                    `
+                        : ""
+                    }
+                    ${
+                      place.formatted_phone_number
+                        ? `
                       <p style="margin: 4px 0; font-size: 12px; color: #6b7280;">
                         📞 ${place.formatted_phone_number}
                       </p>
-                    ` : ''}
-                    ${place.website ? `
+                    `
+                        : ""
+                    }
+                    ${
+                      place.website
+                        ? `
                       <p style="margin: 8px 0 0 0;">
                         <a href="${place.website}" target="_blank" rel="noopener noreferrer" style="font-size: 12px; color: #3b82f6; text-decoration: none;">
                           Visit website →
                         </a>
                       </p>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                   </div>
                 </div>
               `;
 
               const infoWindow = new window.google.maps.InfoWindow({
-                content: content
+                content: content,
               });
               infoWindow.open(map, marker);
             }
@@ -161,9 +207,7 @@ const POIMarkers = () => {
 
       // Add all POI locations to bounds
       poiMarkers.forEach((poi) => {
-        bounds.extend(
-          new window.google.maps.LatLng(poi.lat, poi.lng)
-        );
+        bounds.extend(new window.google.maps.LatLng(poi.lat, poi.lng));
       });
 
       // Fit the map to show all POIs with padding
@@ -178,7 +222,7 @@ const POIMarkers = () => {
 
     // Cleanup
     return () => {
-      newMarkers.forEach(marker => {
+      newMarkers.forEach((marker) => {
         if (marker.setMap) {
           marker.setMap(null);
         }

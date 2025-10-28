@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useAppContext } from '../../context/AppContext';
+import { useState } from "react";
+import { useAppContext } from "../../../context/AppContext";
 
 const AskListingTab = ({ property }) => {
   const { setPoiMarkers } = useAppContext();
-  const [question, setQuestion] = useState('');
+  const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [isAsking, setIsAsking] = useState(false);
 
@@ -12,7 +12,7 @@ const AskListingTab = ({ property }) => {
     "What grocery stores are close?",
     "Where can I find gyms?",
     "Any good restaurants in the area?",
-    "Is there a pharmacy nearby?"
+    "Is there a pharmacy nearby?",
   ];
 
   const handleAsk = async (e) => {
@@ -23,29 +23,30 @@ const AskListingTab = ({ property }) => {
     }
 
     const userQuestion = question.trim();
-    setQuestion(''); // Clear input immediately
+    setQuestion(""); // Clear input immediately
 
     // Add user message to chat
     const userMessage = {
-      role: 'user',
+      role: "user",
       content: userQuestion,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setIsAsking(true);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
       const response = await fetch(`${API_URL}/properties/${property.id}/ask`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          question: userQuestion
-        })
+          question: userQuestion,
+        }),
       });
 
       if (!response.ok) {
@@ -56,30 +57,31 @@ const AskListingTab = ({ property }) => {
 
       // Add assistant message to chat
       const assistantMessage = {
-        role: 'assistant',
+        role: "assistant",
         content: data.answer,
         nearbyPOIs: data.nearbyPOIs || [],
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
 
       // Update map with POI markers
       if (data.nearbyPOIs && data.nearbyPOIs.length > 0) {
         setPoiMarkers(data.nearbyPOIs);
       }
     } catch (error) {
-      console.error('[AskListingTab] Error:', error);
+      console.error("[AskListingTab] Error:", error);
 
       // Add error message
       const errorMessage = {
-        role: 'assistant',
-        content: "I'm having trouble answering your question right now. Please try again or rephrase your question.",
+        role: "assistant",
+        content:
+          "I'm having trouble answering your question right now. Please try again or rephrase your question.",
         isError: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsAsking(false);
     }
@@ -90,25 +92,26 @@ const AskListingTab = ({ property }) => {
 
     // Automatically submit the question
     const userMessage = {
-      role: 'user',
+      role: "user",
       content: exampleQuestion,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setIsAsking(true);
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
       const response = await fetch(`${API_URL}/properties/${property.id}/ask`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          question: exampleQuestion
-        })
+          question: exampleQuestion,
+        }),
       });
 
       if (!response.ok) {
@@ -119,33 +122,34 @@ const AskListingTab = ({ property }) => {
 
       // Add assistant message to chat
       const assistantMessage = {
-        role: 'assistant',
+        role: "assistant",
         content: data.answer,
         nearbyPOIs: data.nearbyPOIs || [],
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
 
       // Update map with POI markers
       if (data.nearbyPOIs && data.nearbyPOIs.length > 0) {
         setPoiMarkers(data.nearbyPOIs);
       }
     } catch (error) {
-      console.error('[AskListingTab] Error:', error);
+      console.error("[AskListingTab] Error:", error);
 
       // Add error message
       const errorMessage = {
-        role: 'assistant',
-        content: "I'm having trouble answering your question right now. Please try again or rephrase your question.",
+        role: "assistant",
+        content:
+          "I'm having trouble answering your question right now. Please try again or rephrase your question.",
         isError: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsAsking(false);
-      setQuestion(''); // Clear input after submission
+      setQuestion(""); // Clear input after submission
     }
   };
 
@@ -190,15 +194,17 @@ const AskListingTab = ({ property }) => {
           messages.map((message, index) => (
             <div
               key={index}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${
+                message.role === "user" ? "justify-end" : "justify-start"
+              }`}
             >
               <div
                 className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                  message.role === 'user'
-                    ? 'bg-primary-600 text-white'
+                  message.role === "user"
+                    ? "bg-primary-600 text-white"
                     : message.isError
-                    ? 'bg-red-50 text-red-800 border border-red-200'
-                    : 'bg-gray-100 text-gray-900'
+                    ? "bg-red-50 text-red-800 border border-red-200"
+                    : "bg-gray-100 text-gray-900"
                 }`}
               >
                 <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -216,7 +222,9 @@ const AskListingTab = ({ property }) => {
                             {poiIndex + 1}.
                           </span>
                           <div className="flex-1">
-                            <p className="font-medium text-gray-800">{poi.name}</p>
+                            <p className="font-medium text-gray-800">
+                              {poi.name}
+                            </p>
                             {poi.rating && (
                               <p className="text-gray-600">⭐ {poi.rating}/5</p>
                             )}
@@ -231,7 +239,10 @@ const AskListingTab = ({ property }) => {
                 )}
 
                 <p className="text-xs opacity-70 mt-1">
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {message.timestamp.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </p>
               </div>
             </div>
@@ -243,9 +254,18 @@ const AskListingTab = ({ property }) => {
           <div className="flex justify-start">
             <div className="bg-gray-100 rounded-lg px-4 py-2">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                ></div>
+                <div
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style={{ animationDelay: "150ms" }}
+                ></div>
+                <div
+                  className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style={{ animationDelay: "300ms" }}
+                ></div>
               </div>
             </div>
           </div>
@@ -268,8 +288,8 @@ const AskListingTab = ({ property }) => {
             disabled={isAsking || !question.trim()}
             className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded transition-colors ${
               isAsking || !question.trim()
-                ? 'text-gray-300 cursor-not-allowed'
-                : 'text-primary-600 hover:bg-primary-50'
+                ? "text-gray-300 cursor-not-allowed"
+                : "text-primary-600 hover:bg-primary-50"
             }`}
           >
             <svg

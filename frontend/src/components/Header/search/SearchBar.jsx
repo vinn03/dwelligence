@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
-import { useMapsLibrary } from '@vis.gl/react-google-maps';
-import { useAppContext } from '../../context/AppContext';
-import AskBar from './AskBar';
+import { useState, useEffect, useRef } from "react";
+import { useMapsLibrary } from "@vis.gl/react-google-maps";
+import { useAppContext } from "../../../context/AppContext";
+import AskBar from "./AskBar";
 
 const SearchBar = ({ onPlaceSelected }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const inputRef = useRef(null);
   const autocompleteRef = useRef(null);
-  const placesLibrary = useMapsLibrary('places');
+  const placesLibrary = useMapsLibrary("places");
   const { setMapBounds, searchMode, setSearchMode } = useAppContext();
 
   useEffect(() => {
@@ -15,19 +15,19 @@ const SearchBar = ({ onPlaceSelected }) => {
 
     // Initialize autocomplete
     const autocomplete = new placesLibrary.Autocomplete(inputRef.current, {
-      fields: ['formatted_address', 'geometry', 'name', 'place_id'],
-      types: ['geocode'], // Use 'geocode' for addresses, cities, neighborhoods
-      componentRestrictions: { country: 'us' }, // Restrict to USA (San Francisco)
+      fields: ["formatted_address", "geometry", "name", "place_id"],
+      types: ["geocode"], // Use 'geocode' for addresses, cities, neighborhoods
+      componentRestrictions: { country: "us" }, // Restrict to USA (San Francisco)
     });
 
     autocompleteRef.current = autocomplete;
 
     // Listen for place selection
-    autocomplete.addListener('place_changed', () => {
+    autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
 
       if (!place.geometry || !place.geometry.location) {
-        console.error('No geometry for selected place');
+        console.error("No geometry for selected place");
         return;
       }
 
@@ -38,7 +38,7 @@ const SearchBar = ({ onPlaceSelected }) => {
       };
 
       // Update the input value
-      setQuery(place.formatted_address || place.name || '');
+      setQuery(place.formatted_address || place.name || "");
 
       // Pan map to the selected location
       if (place.geometry.viewport) {
@@ -71,7 +71,9 @@ const SearchBar = ({ onPlaceSelected }) => {
 
     return () => {
       if (autocompleteRef.current) {
-        window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
+        window.google.maps.event.clearInstanceListeners(
+          autocompleteRef.current
+        );
       }
     };
   }, [placesLibrary, onPlaceSelected, setMapBounds]);
@@ -80,18 +82,21 @@ const SearchBar = ({ onPlaceSelected }) => {
     e.preventDefault();
     // Trigger autocomplete selection if user pressed enter
     if (query && autocompleteRef.current) {
-      window.google.maps.event.trigger(autocompleteRef.current, 'place_changed');
+      window.google.maps.event.trigger(
+        autocompleteRef.current,
+        "place_changed"
+      );
     }
   };
 
   // If in Ask mode, render AskBar instead
-  if (searchMode === 'ask') {
+  if (searchMode === "ask") {
     return (
       <div className="relative flex items-center gap-2">
         <AskBar />
         {/* Mode Toggle Button */}
         <button
-          onClick={() => setSearchMode('search')}
+          onClick={() => setSearchMode("search")}
           className="flex-shrink-0 p-2 hover:bg-gray-100 rounded-lg transition-colors group"
           title="Switch to address search"
         >
@@ -147,7 +152,7 @@ const SearchBar = ({ onPlaceSelected }) => {
 
       {/* Mode Toggle Button - Sparkles icon for AI */}
       <button
-        onClick={() => setSearchMode('ask')}
+        onClick={() => setSearchMode("ask")}
         className="flex-shrink-0 p-2 hover:bg-primary-50 rounded-lg transition-colors group"
         title="Switch to AI search"
       >
