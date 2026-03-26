@@ -25,6 +25,7 @@ const DetailedListingView = ({ property, onBack }) => {
         />
         <button
           onClick={onBack}
+          aria-label="Go back"
           className="absolute top-4 left-4 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
         >
           <svg
@@ -46,6 +47,7 @@ const DetailedListingView = ({ property, onBack }) => {
             e.stopPropagation();
             toggleFavorite(property.id, property);
           }}
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
         >
           {isFavorite ? (

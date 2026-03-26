@@ -4,9 +4,10 @@ const ListingTypeToggle = () => {
   const { filters, updateFilters } = useAppContext();
 
   return (
-    <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-1">
+    <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-1" role="group" aria-label="Listing type">
       <button
         onClick={() => updateFilters({ listingType: "rent" })}
+        aria-pressed={filters.listingType === "rent" || !filters.listingType}
         className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
           filters.listingType === "rent" || !filters.listingType
             ? "bg-white text-primary-600 shadow-sm font-semibold"
@@ -17,6 +18,7 @@ const ListingTypeToggle = () => {
       </button>
       <button
         onClick={() => updateFilters({ listingType: "sale" })}
+        aria-pressed={filters.listingType === "sale"}
         className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
           filters.listingType === "sale"
             ? "bg-white text-primary-600 shadow-sm font-semibold"

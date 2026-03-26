@@ -99,6 +99,7 @@ const SearchBar = ({ onPlaceSelected }) => {
           onClick={() => setSearchMode("search")}
           className="flex-shrink-0 p-2 hover:bg-gray-100 rounded-lg transition-colors group"
           title="Switch to address search"
+          aria-label="Switch to address search"
         >
           <svg
             className="w-5 h-5 text-primary-600 group-hover:text-primary-700"
@@ -128,10 +129,12 @@ const SearchBar = ({ onPlaceSelected }) => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for an address or neighborhood"
+          aria-label="Search for an address or neighborhood"
           className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
         />
         <button
           type="submit"
+          aria-label="Search"
           className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded"
         >
           <svg

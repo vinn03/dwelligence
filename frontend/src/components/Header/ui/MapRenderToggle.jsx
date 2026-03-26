@@ -6,6 +6,8 @@ const MapRenderToggle = () => {
   return (
     <button
       onClick={() => setUseRasterMap(!useRasterMap)}
+      aria-pressed={useRasterMap}
+      aria-label={useRasterMap ? "Switch to vector map (high quality)" : "Switch to raster map (low bandwidth)"}
       className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
         useRasterMap
           ? "bg-orange-100 text-orange-700 hover:bg-orange-200"

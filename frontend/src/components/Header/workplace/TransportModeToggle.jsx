@@ -36,9 +36,11 @@ const TransportModeToggle = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Dropdown button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-label={`Transport mode: ${currentMode.label}`}
         className="px-3 py-1.5 rounded-md text-sm font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors flex items-center gap-2"
       >
         <span>{currentMode.icon}</span>
@@ -60,12 +62,17 @@ const TransportModeToggle = () => {
         </svg>
       </button>
 
-      {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[140px]">
+        <div 
+          role="listbox"
+          aria-label="Transport mode options"
+          className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[140px]"
+        >
           {modes.map((mode) => (
             <button
               key={mode.id}
+              role="option"
+              aria-selected={transportMode === mode.id}
               onClick={() => handleSelect(mode.id)}
               className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 ${
                 transportMode === mode.id
