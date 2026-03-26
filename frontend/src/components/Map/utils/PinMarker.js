@@ -27,45 +27,45 @@ export const createPinMarkerElement = ({ emoji, color = "#2563eb", onClick }) =>
   return markerDiv;
 };
 
-export class PinMarkerOverlay extends window.google.maps.OverlayView {
-  constructor(position, content) {
-    super();
-    this.position = position;
-    this.content = content;
-  }
-
-  onAdd() {
-    this.div = this.content;
-    const panes = this.getPanes();
-    panes.overlayMouseTarget.appendChild(this.div);
-  }
-
-  draw() {
-    const overlayProjection = this.getProjection();
-    const position = overlayProjection.fromLatLngToDivPixel(
-      new window.google.maps.LatLng(this.position.lat, this.position.lng)
-    );
-    if (position) {
-      this.div.style.left = position.x - 25 + "px";
-      this.div.style.top = position.y - 60 + "px";
-    }
-  }
-
-  onRemove() {
-    if (this.div) {
-      this.div.parentNode.removeChild(this.div);
-      this.div = null;
-    }
-  }
-};
-
 export const createPinMarker = (map, position, emoji, color, onClick) => {
-  if (!map || !window.google) return null;
+  if (!map || !window.google || !window.google.maps) return null;
 
   const markerDiv = createPinMarkerElement({ emoji, color, onClick });
 
   if (onClick) {
     markerDiv.addEventListener("click", onClick);
+  }
+
+  class PinMarkerOverlay extends window.google.maps.OverlayView {
+    constructor(pos, content) {
+      super();
+      this.position = pos;
+      this.content = content;
+    }
+
+    onAdd() {
+      this.div = this.content;
+      const panes = this.getPanes();
+      panes.overlayMouseTarget.appendChild(this.div);
+    }
+
+    draw() {
+      const overlayProjection = this.getProjection();
+      const pos = overlayProjection.fromLatLngToDivPixel(
+        new window.google.maps.LatLng(this.position.lat, this.position.lng)
+      );
+      if (pos) {
+        this.div.style.left = pos.x - 25 + "px";
+        this.div.style.top = pos.y - 60 + "px";
+      }
+    }
+
+    onRemove() {
+      if (this.div) {
+        this.div.parentNode.removeChild(this.div);
+        this.div = null;
+      }
+    }
   }
 
   const pinMarker = new PinMarkerOverlay(position, markerDiv);
