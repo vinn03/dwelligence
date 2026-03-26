@@ -1,24 +1,100 @@
 import axios from 'axios';
 
+/**
+ * @typedef {Object} PropertyFilters
+ * @property {number} [minPrice]
+ * @property {number} [maxPrice]
+ * @property {number} [bedrooms]
+ * @property {number} [bathrooms]
+ * @property {string} [propertyType]
+ * @property {string} [listingType]
+ */
+
+/**
+ * @typedef {Object} MapBounds
+ * @property {number} north
+ * @property {number} south
+ * @property {number} east
+ * @property {number} west
+ */
+
+/**
+ * @typedef {Object} Coordinates
+ * @property {number} lat
+ * @property {number} lng
+ */
+
+/**
+ * @typedef {Object} ApiError
+ * @property {string} message
+ * @property {number} [status]
+ * @property {any} [data]
+ */
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  timeout: 10000
 });
 
-// Properties API
+api.interceptors.request.use(
+  (config) => {
+    console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`);
+    return config;
+  },
+  (error) => {
+    console.error('[API] Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response) {
+      console.error(`[API] Error ${error.response.status}:`, error.response.data);
+    } else if (error.request) {
+      console.error('[API] No response received:', error.message);
+    } else {
+      console.error('[API] Request setup error:', error.message);
+    }
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Creates an AbortController signal for request cancellation
+ * @returns {{ signal: AbortSignal }}
+ */
+export const createCancelToken = () => {
+  const controller = new AbortController();
+  return { signal: controller.signal };
+};
+
+/**
+ * Properties API
+ * @typedef {Object} PropertiesAPI
+ * @property {function(Object=, Object=): Promise} getAll
+ * @property {function(MapBounds, Object=, string=): Promise} getInBounds
+ * @property {function(string): Promise} getById
+ * @property {function(string, string=): Promise} getAmenitiesForProperty
+ * @property {function(Object): Promise} create
+ * @property {function(string, string): Promise} askAboutListing
+ */
+
+/** @type {PropertiesAPI} */
 export const propertiesAPI = {
-  // Get all properties with filters
-  getAll: (filters = {}) => {
-    return api.get('/properties', { params: filters });
+  getAll: (filters = {}, options = {}) => {
+    return api.get('/properties', { params: filters, ...options });
   },
 
-  // Get properties within map bounds with filters
-  getInBounds: (bounds, filters = {}, transportMode = 'walking') => {
-    // Only include non-null filter values
+  getInBounds: (bounds, filters = {}, transportMode = 'walking', options = {}) => {
     const filterParams = {};
     if (filters.minPrice) filterParams.minPrice = filters.minPrice;
     if (filters.maxPrice) filterParams.maxPrice = filters.maxPrice;
@@ -26,81 +102,88 @@ export const propertiesAPI = {
     if (filters.bathrooms) filterParams.bathrooms = filters.bathrooms;
     if (filters.propertyType) filterParams.propertyType = filters.propertyType;
     if (filters.listingType) filterParams.listingType = filters.listingType;
-
-    // Add transport mode
     if (transportMode) filterParams.transportMode = transportMode;
 
     return api.get('/properties/map-bounds', {
-      params: { ...bounds, ...filterParams }
+      params: { ...bounds, ...filterParams },
+      ...options
     });
   },
 
-  // Get single property
-  getById: (id) => {
-    return api.get(`/properties/${id}`);
+  getById: (id, options = {}) => {
+    return api.get(`/properties/${id}`, options);
   },
 
-  // Get amenities for a property's hex
-  getAmenitiesForProperty: (id, transportMode = 'walking') => {
+  getAmenitiesForProperty: (id, transportMode = 'walking', options = {}) => {
     return api.get(`/properties/${id}/amenities`, {
-      params: { transportMode }
+      params: { transportMode },
+      ...options
     });
   },
 
-  // Create property (for testing)
-  create: (propertyData) => {
-    return api.post('/properties', propertyData);
+  create: (propertyData, options = {}) => {
+    return api.post('/properties', propertyData, options);
   },
 
-  // Ask question about nearby POIs for a property (Iteration 3)
-  askAboutListing: (propertyId, question) => {
-    return api.post(`/properties/${propertyId}/ask`, { question });
+  askAboutListing: (propertyId, question, options = {}) => {
+    return api.post(`/properties/${propertyId}/ask`, { question }, options);
   }
 };
 
-// Commute API
+/**
+ * Commute API
+ * @typedef {Object} CommuteAPI
+ * @property {function(Object, string[], string=): Promise} calculate
+ * @property {function(Object, MapBounds, string=): Promise} calculateForBounds
+ * @property {function(Coordinates, Coordinates, string=): Promise} getRoutes
+ */
+
+/** @type {CommuteAPI} */
 export const commuteAPI = {
-  // Calculate commutes for multiple properties
-  calculate: (workplace, propertyIds, mode = 'transit') => {
+  calculate: (workplace, propertyIds, mode = 'transit', options = {}) => {
     return api.post('/commute/calculate', {
       workplace,
       propertyIds,
       mode
-    });
+    }, options);
   },
 
-  // Batch calculate for bounds
-  calculateForBounds: (workplace, bounds, mode = 'transit') => {
+  calculateForBounds: (workplace, bounds, mode = 'transit', options = {}) => {
     return api.get('/commute/batch', {
       params: {
         workplaceLat: workplace.lat,
         workplaceLng: workplace.lng,
         mode,
         ...bounds
-      }
+      },
+      ...options
     });
   },
 
-  // Get route alternatives from origin to destination
-  getRoutes: (origin, destination, mode = 'transit') => {
+  getRoutes: (origin, destination, mode = 'transit', options = {}) => {
     return api.post('/commute/routes', {
       origin,
       destination,
       mode
-    });
+    }, options);
   }
 };
 
-// Search API (Iteration 3 - AI-powered search)
+/**
+ * Search API
+ * @typedef {Object} SearchAPI
+ * @property {function(string, Object=, Object=, number=): Promise} aiSearch
+ */
+
+/** @type {SearchAPI} */
 export const searchAPI = {
-  // Natural language AI search
-  aiSearch: (query, workplace = null, filters = {}, maxResults = 20) => {
+  aiSearch: (query, workplace = null, filters = {}, maxResults = 20, options = {}) => {
     return api.post('/search/ai', {
       query,
       workplace,
       filters,
       maxResults
-    });
+    }, options);
   }
 };
 

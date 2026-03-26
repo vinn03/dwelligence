@@ -1,161 +1,45 @@
 import { useState } from "react";
 import { useAppContext } from "../../../context/AppContext";
+import useAskProperty from "../../../hooks/useAskProperty";
+
+const EXAMPLE_QUESTIONS = [
+  "Are there any coffee shops nearby?",
+  "What grocery stores are close?",
+  "Where can I find gyms?",
+  "Any good restaurants in the area?",
+  "Is there a pharmacy nearby?",
+];
 
 const AskListingTab = ({ property }) => {
   const { setPoiMarkers } = useAppContext();
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [isAsking, setIsAsking] = useState(false);
 
-  const exampleQuestions = [
-    "Are there any coffee shops nearby?",
-    "What grocery stores are close?",
-    "Where can I find gyms?",
-    "Any good restaurants in the area?",
-    "Is there a pharmacy nearby?",
-  ];
+  const handlePOIsLoaded = (pois) => {
+    setPoiMarkers(pois);
+  };
 
-  const handleAsk = async (e) => {
+  const { messages, isAsking, askQuestion } = useAskProperty(
+    property.id,
+    handlePOIsLoaded
+  );
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!question.trim() || isAsking) {
-      return;
-    }
-
+    if (!question.trim() || isAsking) return;
+    
     const userQuestion = question.trim();
-    setQuestion(""); // Clear input immediately
-
-    // Add user message to chat
-    const userMessage = {
-      role: "user",
-      content: userQuestion,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setIsAsking(true);
-
-    try {
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:3001/api";
-
-      const response = await fetch(`${API_URL}/properties/${property.id}/ask`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          question: userQuestion,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to get answer: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      // Add assistant message to chat
-      const assistantMessage = {
-        role: "assistant",
-        content: data.answer,
-        nearbyPOIs: data.nearbyPOIs || [],
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-
-      // Update map with POI markers
-      if (data.nearbyPOIs && data.nearbyPOIs.length > 0) {
-        setPoiMarkers(data.nearbyPOIs);
-      }
-    } catch (error) {
-      console.error("[AskListingTab] Error:", error);
-
-      // Add error message
-      const errorMessage = {
-        role: "assistant",
-        content:
-          "I'm having trouble answering your question right now. Please try again or rephrase your question.",
-        isError: true,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsAsking(false);
-    }
+    setQuestion("");
+    await askQuestion(userQuestion);
   };
 
   const handleExampleClick = async (exampleQuestion) => {
     setQuestion(exampleQuestion);
-
-    // Automatically submit the question
-    const userMessage = {
-      role: "user",
-      content: exampleQuestion,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setIsAsking(true);
-
-    try {
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:3001/api";
-
-      const response = await fetch(`${API_URL}/properties/${property.id}/ask`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          question: exampleQuestion,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to get answer: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      // Add assistant message to chat
-      const assistantMessage = {
-        role: "assistant",
-        content: data.answer,
-        nearbyPOIs: data.nearbyPOIs || [],
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-
-      // Update map with POI markers
-      if (data.nearbyPOIs && data.nearbyPOIs.length > 0) {
-        setPoiMarkers(data.nearbyPOIs);
-      }
-    } catch (error) {
-      console.error("[AskListingTab] Error:", error);
-
-      // Add error message
-      const errorMessage = {
-        role: "assistant",
-        content:
-          "I'm having trouble answering your question right now. Please try again or rephrase your question.",
-        isError: true,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsAsking(false);
-      setQuestion(""); // Clear input after submission
-    }
+    await askQuestion(exampleQuestion);
+    setQuestion("");
   };
 
   return (
     <div className="h-full flex flex-col">
-      {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto space-y-4 mb-4">
         {messages.length === 0 ? (
           <div className="text-center py-8">
@@ -176,10 +60,9 @@ const AskListingTab = ({ property }) => {
               Ask me anything about this property's neighborhood!
             </p>
 
-            {/* Example Questions */}
             <div className="space-y-2">
               <p className="text-xs text-gray-500 font-medium">Try asking:</p>
-              {exampleQuestions.map((example, index) => (
+              {EXAMPLE_QUESTIONS.map((example, index) => (
                 <button
                   key={index}
                   onClick={() => handleExampleClick(example)}
@@ -209,7 +92,6 @@ const AskListingTab = ({ property }) => {
               >
                 <p className="text-sm whitespace-pre-wrap">{message.content}</p>
 
-                {/* Show nearby POIs if available */}
                 {message.nearbyPOIs && message.nearbyPOIs.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-gray-200">
                     <p className="text-xs font-semibold text-gray-700 mb-2">
@@ -249,7 +131,6 @@ const AskListingTab = ({ property }) => {
           ))
         )}
 
-        {/* Loading indicator */}
         {isAsking && (
           <div className="flex justify-start">
             <div className="bg-gray-100 rounded-lg px-4 py-2">
@@ -272,8 +153,7 @@ const AskListingTab = ({ property }) => {
         )}
       </div>
 
-      {/* Input Form */}
-      <form onSubmit={handleAsk} className="border-t border-gray-200 pt-4">
+      <form onSubmit={handleSubmit} className="border-t border-gray-200 pt-4">
         <div className="relative">
           <input
             type="text"

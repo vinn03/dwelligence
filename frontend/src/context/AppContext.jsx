@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 
 const AppContext = createContext();
 
@@ -13,8 +14,12 @@ export const useAppContext = () => {
 export const AppProvider = ({ children }) => {
   // Workplace state
   const [workplace, setWorkplace] = useState(() => {
-    const saved = localStorage.getItem('workplace');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('workplace');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
 
   // Transport mode state
@@ -37,8 +42,12 @@ export const AppProvider = ({ children }) => {
 
   // Favorites state (stored in localStorage)
   const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('favorites');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('favorites');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
   // Favorite properties cache (full property objects)
@@ -88,39 +97,42 @@ export const AppProvider = ({ children }) => {
   }, [favorites]);
 
   // Add property to favorites cache
-  const addPropertyToFavoritesCache = (property) => {
+  const addPropertyToFavoritesCache = useCallback((property) => {
     setFavoriteProperties(prev => {
-      // Check if property already exists in cache
       if (prev.some(p => p.id === property.id)) {
         return prev;
       }
       return [...prev, property];
     });
-  };
+  }, []);
 
   // Toggle favorite
-  const toggleFavorite = (propertyId, property = null) => {
+  const toggleFavorite = useCallback((propertyId, property = null) => {
     setFavorites(prev => {
       if (prev.includes(propertyId)) {
-        // Remove from favorites
-        setFavoriteProperties(prevProps => prevProps.filter(p => p.id !== propertyId));
         return prev.filter(id => id !== propertyId);
-      } else {
-        // Add to favorites
-        if (property) {
-          addPropertyToFavoritesCache(property);
-        }
-        return [...prev, propertyId];
       }
+      return [...prev, propertyId];
     });
-  };
+    if (property && !favorites.includes(propertyId)) {
+      setFavoriteProperties(prev => {
+        if (prev.some(p => p.id === property.id)) {
+          return prev;
+        }
+        return [...prev, property];
+      });
+    }
+    if (favorites.includes(propertyId)) {
+      setFavoriteProperties(prev => prev.filter(p => p.id !== propertyId));
+    }
+  }, [favorites]);
 
   // Update filters
-  const updateFilters = (newFilters) => {
+  const updateFilters = useCallback((newFilters) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
-  };
+  }, []);
 
-  const value = {
+  const value = useMemo(() => ({
     // Workplace
     workplace,
     setWorkplace,
@@ -186,7 +198,32 @@ export const AppProvider = ({ children }) => {
     // POI markers
     poiMarkers,
     setPoiMarkers
-  };
+  }), [
+    workplace,
+    transportMode,
+    filters,
+    properties,
+    visibleProperties,
+    selectedProperty,
+    favorites,
+    favoriteProperties,
+    mapBounds,
+    useRasterMap,
+    loading,
+    activeTab,
+    detailedProperty,
+    detailedViewTab,
+    selectedRoutes,
+    selectedRouteIndex,
+    amenityVisualization,
+    searchMode,
+    aiResults,
+    aiInterpretation,
+    poiMarkers,
+    toggleFavorite,
+    addPropertyToFavoritesCache,
+    updateFilters
+  ]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

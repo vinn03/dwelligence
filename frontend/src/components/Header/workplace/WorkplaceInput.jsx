@@ -124,6 +124,7 @@ const WorkplaceInput = () => {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Enter workplace address"
+                aria-label="Enter workplace address"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 mb-4"
                 autoFocus
               />
