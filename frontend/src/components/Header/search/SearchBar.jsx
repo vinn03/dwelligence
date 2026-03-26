@@ -72,7 +72,7 @@ const SearchBar = ({ onPlaceSelected }) => {
     return () => {
       if (autocompleteRef.current) {
         window.google.maps.event.clearInstanceListeners(
-          autocompleteRef.current
+          autocompleteRef.current,
         );
       }
     };
@@ -84,7 +84,7 @@ const SearchBar = ({ onPlaceSelected }) => {
     if (query && autocompleteRef.current) {
       window.google.maps.event.trigger(
         autocompleteRef.current,
-        "place_changed"
+        "place_changed",
       );
     }
   };
@@ -150,9 +150,9 @@ const SearchBar = ({ onPlaceSelected }) => {
         </button>
       </form>
 
-      {/* Mode Toggle Button - Sparkles icon for AI */}
-      <button
-        onClick={() => setSearchMode("ask")}
+      {/* AI search disabled for now */}
+      {/* <button
+        onClick={() => setSearchMode('ask')}
         className="flex-shrink-0 p-2 hover:bg-primary-50 rounded-lg transition-colors group"
         title="Switch to AI search"
       >
@@ -169,7 +169,7 @@ const SearchBar = ({ onPlaceSelected }) => {
             d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
           />
         </svg>
-      </button>
+      </button> */}
     </div>
   );
 };

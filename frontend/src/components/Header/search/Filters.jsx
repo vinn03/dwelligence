@@ -1,10 +1,28 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useAppContext } from "../../../context/AppContext";
 
 const Filters = () => {
   const { filters, updateFilters } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Price range slider constants (in thousands)
+  const PRICE_MIN = 0;
+  const PRICE_MAX = 10000; // $10,000/month
+
+  // Local state for slider values (to show while dragging)
+  const [localMinPrice, setLocalMinPrice] = useState(
+    filters.minPrice || PRICE_MIN,
+  );
+  const [localMaxPrice, setLocalMaxPrice] = useState(
+    filters.maxPrice || PRICE_MAX,
+  );
+
+  // Update local state when filters change externally
+  useEffect(() => {
+    setLocalMinPrice(filters.minPrice || PRICE_MIN);
+    setLocalMaxPrice(filters.maxPrice || PRICE_MAX);
+  }, [filters.minPrice, filters.maxPrice]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -18,7 +36,37 @@ const Filters = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleMinPriceChange = useCallback(
+    (value) => {
+      const numValue = parseInt(value);
+      if (numValue <= localMaxPrice) {
+        setLocalMinPrice(numValue);
+      }
+    },
+    [localMaxPrice],
+  );
+
+  const handleMaxPriceChange = useCallback(
+    (value) => {
+      const numValue = parseInt(value);
+      if (numValue >= localMinPrice) {
+        setLocalMaxPrice(numValue);
+      }
+    },
+    [localMinPrice],
+  );
+
+  const handlePriceChangeComplete = useCallback(() => {
+    // Only update global filters when user releases the slider
+    updateFilters({
+      minPrice: localMinPrice === PRICE_MIN ? null : localMinPrice,
+      maxPrice: localMaxPrice === PRICE_MAX ? null : localMaxPrice,
+    });
+  }, [localMinPrice, localMaxPrice, updateFilters]);
+
   const handleReset = () => {
+    setLocalMinPrice(PRICE_MIN);
+    setLocalMaxPrice(PRICE_MAX);
     updateFilters({
       minPrice: null,
       maxPrice: null,
@@ -27,6 +75,10 @@ const Filters = () => {
       propertyType: null,
       listingType: null,
     });
+  };
+
+  const formatPrice = (price) => {
+    return `$${price.toLocaleString()}`;
   };
 
   return (
@@ -77,25 +129,59 @@ const Filters = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Price Range
                 </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={filters.minPrice || ""}
-                    onChange={(e) =>
-                      updateFilters({ minPrice: e.target.value || null })
-                    }
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={filters.maxPrice || ""}
-                    onChange={(e) =>
-                      updateFilters({ maxPrice: e.target.value || null })
-                    }
-                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  />
+                <div className="px-2">
+                  {/* Price display */}
+                  <div className="flex justify-between mb-3 text-sm font-medium text-gray-900">
+                    <span>{formatPrice(localMinPrice)}</span>
+                    <span>{formatPrice(localMaxPrice)}</span>
+                  </div>
+
+                  {/* Dual range slider container */}
+                  <div className="relative h-8">
+                    {/* Track background */}
+                    <div className="absolute top-1/2 -translate-y-1/2 w-full h-1.5 bg-gray-200 rounded-full" />
+
+                    {/* Active track (between thumbs) */}
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2 h-1.5 bg-primary-500 rounded-full pointer-events-none"
+                      style={{
+                        left: `${(localMinPrice / PRICE_MAX) * 100}%`,
+                        right: `${100 - (localMaxPrice / PRICE_MAX) * 100}%`,
+                      }}
+                    />
+
+                    {/* Min price slider */}
+                    <input
+                      type="range"
+                      min={PRICE_MIN}
+                      max={PRICE_MAX}
+                      step={100}
+                      value={localMinPrice}
+                      onChange={(e) => handleMinPriceChange(e.target.value)}
+                      onMouseUp={handlePriceChangeComplete}
+                      onTouchEnd={handlePriceChangeComplete}
+                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary-500 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md"
+                    />
+
+                    {/* Max price slider */}
+                    <input
+                      type="range"
+                      min={PRICE_MIN}
+                      max={PRICE_MAX}
+                      step={100}
+                      value={localMaxPrice}
+                      onChange={(e) => handleMaxPriceChange(e.target.value)}
+                      onMouseUp={handlePriceChangeComplete}
+                      onTouchEnd={handlePriceChangeComplete}
+                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary-500 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md"
+                    />
+                  </div>
+
+                  {/* Range labels */}
+                  <div className="flex justify-between mt-2 text-xs text-gray-500">
+                    <span>{formatPrice(PRICE_MIN)}</span>
+                    <span>{formatPrice(PRICE_MAX)}</span>
+                  </div>
                 </div>
               </div>
 
