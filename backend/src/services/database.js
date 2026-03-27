@@ -194,7 +194,6 @@ export const db = {
     }
 
     query += ` GROUP BY p.id, p.name, p.address, p.lat, p.lng, p.price, p.bedrooms, p.bathrooms, p.sq_ft, p.property_type, p.sale_type, p.description, p.image_url`;
-    query += ' LIMIT 100'; // Reasonable limit for map viewport
 
     const result = await pool.query(query, params);
 
