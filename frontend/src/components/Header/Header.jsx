@@ -15,12 +15,13 @@ const Header = () => {
         <div className="h-16 px-4 flex items-center justify-between gap-4">
           {/* Left group: Branding and Search */}
           <div className="flex items-center gap-4">
-            <Logo />
             <ListingTypeToggle />
             <div className="flex-1 max-w-md">
               <SearchBar />
             </div>
           </div>
+
+          <Logo />
 
           {/* Right group: Workplace and Controls */}
           <div className="flex items-center gap-4">
