@@ -18,10 +18,16 @@ const Filters = () => {
     filters.maxPrice || PRICE_MAX,
   );
 
+  // Separate state for input text values
+  const [minPriceInput, setMinPriceInput] = useState(String(filters.minPrice || PRICE_MIN));
+  const [maxPriceInput, setMaxPriceInput] = useState(String(filters.maxPrice || PRICE_MAX));
+
   // Update local state when filters change externally
   useEffect(() => {
     setLocalMinPrice(filters.minPrice || PRICE_MIN);
     setLocalMaxPrice(filters.maxPrice || PRICE_MAX);
+    setMinPriceInput(String(filters.minPrice || PRICE_MIN));
+    setMaxPriceInput(String(filters.maxPrice || PRICE_MAX));
   }, [filters.minPrice, filters.maxPrice]);
 
   // Close dropdown when clicking outside
@@ -56,6 +62,32 @@ const Filters = () => {
     [localMinPrice],
   );
 
+  const confirmMinPrice = useCallback(() => {
+    const val = minPriceInput.replace(/[^0-9]/g, '');
+    const numVal = parseInt(val) || PRICE_MIN;
+    const clampedVal = Math.min(Math.min(numVal, localMaxPrice), PRICE_MAX);
+    setLocalMinPrice(clampedVal);
+    setMinPriceInput(String(clampedVal));
+    updateFilters({
+      minPrice: clampedVal === PRICE_MIN ? null : clampedVal,
+    });
+  }, [minPriceInput, localMaxPrice, updateFilters]);
+
+  const confirmMaxPrice = useCallback(() => {
+    let val = maxPriceInput.toLowerCase().replace(/[^0-9k]/g, '');
+    if (val.includes('k')) {
+      val = val.replace('k', '000');
+    }
+    const numVal = parseInt(val) || PRICE_MAX;
+    const finalVal = Math.max(numVal, localMinPrice);
+    const sliderVal = Math.min(finalVal, PRICE_MAX);
+    setLocalMaxPrice(sliderVal);
+    setMaxPriceInput(String(finalVal));
+    updateFilters({
+      maxPrice: finalVal >= PRICE_MAX ? null : finalVal,
+    });
+  }, [maxPriceInput, localMinPrice, updateFilters]);
+
   const handlePriceChangeComplete = useCallback(() => {
     // Only update global filters when user releases the slider
     updateFilters({
@@ -67,6 +99,8 @@ const Filters = () => {
   const handleReset = () => {
     setLocalMinPrice(PRICE_MIN);
     setLocalMaxPrice(PRICE_MAX);
+    setMinPriceInput(String(PRICE_MIN));
+    setMaxPriceInput(String(PRICE_MAX));
     updateFilters({
       minPrice: null,
       maxPrice: null,
@@ -78,6 +112,9 @@ const Filters = () => {
   };
 
   const formatPrice = (price) => {
+    if (price >= PRICE_MAX) {
+      return '$10k+';
+    }
     return `$${price.toLocaleString()}`;
   };
 
@@ -130,10 +167,47 @@ const Filters = () => {
                   Price Range
                 </label>
                 <div className="px-2">
-                  {/* Price display */}
-                  <div className="flex justify-between mb-3 text-sm font-medium text-gray-900">
-                    <span>{formatPrice(localMinPrice)}</span>
-                    <span>{formatPrice(localMaxPrice)}</span>
+                  {/* Price input fields */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                      <input
+                        type="text"
+                        value={minPriceInput}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, '');
+                          setMinPriceInput(val);
+                        }}
+                        onBlur={confirmMinPrice}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.target.blur();
+                          }
+                        }}
+                        className="w-full pl-7 pr-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        placeholder="Min"
+                      />
+                    </div>
+                    <span className="text-gray-400">-</span>
+                    <div className="relative flex-1">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                      <input
+                        type="text"
+                        value={maxPriceInput}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, '');
+                          setMaxPriceInput(val);
+                        }}
+                        onBlur={confirmMaxPrice}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.target.blur();
+                          }
+                        }}
+                        className="w-full pl-7 pr-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        placeholder="Max"
+                      />
+                    </div>
                   </div>
 
                   {/* Dual range slider container */}
