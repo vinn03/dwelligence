@@ -1,6 +1,28 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useAppContext } from "../../../context/AppContext";
 
+const sliderThumbStyle = `
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #bec3cb;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #bec3cb;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+`;
+
 const Filters = () => {
   const { filters, updateFilters } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
@@ -19,8 +41,12 @@ const Filters = () => {
   );
 
   // Separate state for input text values
-  const [minPriceInput, setMinPriceInput] = useState(String(filters.minPrice || PRICE_MIN));
-  const [maxPriceInput, setMaxPriceInput] = useState(String(filters.maxPrice || PRICE_MAX));
+  const [minPriceInput, setMinPriceInput] = useState(
+    String(filters.minPrice || PRICE_MIN),
+  );
+  const [maxPriceInput, setMaxPriceInput] = useState(
+    String(filters.maxPrice || PRICE_MAX),
+  );
 
   // Update local state when filters change externally
   useEffect(() => {
@@ -63,7 +89,7 @@ const Filters = () => {
   );
 
   const confirmMinPrice = useCallback(() => {
-    const val = minPriceInput.replace(/[^0-9]/g, '');
+    const val = minPriceInput.replace(/[^0-9]/g, "");
     const numVal = parseInt(val) || PRICE_MIN;
     const clampedVal = Math.min(Math.min(numVal, localMaxPrice), PRICE_MAX);
     setLocalMinPrice(clampedVal);
@@ -74,9 +100,9 @@ const Filters = () => {
   }, [minPriceInput, localMaxPrice, updateFilters]);
 
   const confirmMaxPrice = useCallback(() => {
-    let val = maxPriceInput.toLowerCase().replace(/[^0-9k]/g, '');
-    if (val.includes('k')) {
-      val = val.replace('k', '000');
+    let val = maxPriceInput.toLowerCase().replace(/[^0-9k]/g, "");
+    if (val.includes("k")) {
+      val = val.replace("k", "000");
     }
     const numVal = parseInt(val) || PRICE_MAX;
     const finalVal = Math.max(numVal, localMinPrice);
@@ -113,13 +139,14 @@ const Filters = () => {
 
   const formatPrice = (price) => {
     if (price >= PRICE_MAX) {
-      return '$10k+';
+      return "$10k+";
     }
     return `$${price.toLocaleString()}`;
   };
 
   return (
     <div className="relative" ref={dropdownRef}>
+      <style>{sliderThumbStyle}</style>
       {/* Dropdown button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -170,17 +197,19 @@ const Filters = () => {
                   {/* Price input fields */}
                   <div className="flex items-center gap-2 mb-3">
                     <div className="relative flex-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+                        $
+                      </span>
                       <input
                         type="text"
                         value={minPriceInput}
                         onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, '');
+                          const val = e.target.value.replace(/[^0-9]/g, "");
                           setMinPriceInput(val);
                         }}
                         onBlur={confirmMinPrice}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             e.target.blur();
                           }
                         }}
@@ -190,17 +219,19 @@ const Filters = () => {
                     </div>
                     <span className="text-gray-400">-</span>
                     <div className="relative flex-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+                        $
+                      </span>
                       <input
                         type="text"
                         value={maxPriceInput}
                         onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, '');
+                          const val = e.target.value.replace(/[^0-9]/g, "");
                           setMaxPriceInput(val);
                         }}
                         onBlur={confirmMaxPrice}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === "Enter") {
                             e.target.blur();
                           }
                         }}
@@ -234,7 +265,7 @@ const Filters = () => {
                       onChange={(e) => handleMinPriceChange(e.target.value)}
                       onMouseUp={handlePriceChangeComplete}
                       onTouchEnd={handlePriceChangeComplete}
-                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary-500 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md"
+                      className="absolute w-full h-8 appearance-none bg-transparent pointer-events-none top-1/2 -translate-y-1/2"
                     />
 
                     {/* Max price slider */}
@@ -247,7 +278,7 @@ const Filters = () => {
                       onChange={(e) => handleMaxPriceChange(e.target.value)}
                       onMouseUp={handlePriceChangeComplete}
                       onTouchEnd={handlePriceChangeComplete}
-                      className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary-500 [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary-500 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:shadow-md"
+                      className="absolute w-full h-8 appearance-none bg-transparent pointer-events-none top-1/2 -translate-y-1/2"
                     />
                   </div>
 
